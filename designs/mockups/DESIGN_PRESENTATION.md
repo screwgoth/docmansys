@@ -18,11 +18,12 @@ The DocManSys interface follows modern design principles:
 
 ### Color Palette
 
-- **Primary:** Indigo (#6366f1) - Modern, professional, trustworthy
-- **Secondary:** Purple (#8b5cf6) - Accent and gradient overlays
+- **Primary:** Black (#0a0a0a) - Bold, professional, modern
+- **Secondary:** Dark Gray (#1a1a1a) - Accent and gradient overlays
 - **Success:** Green (#10b981) - Positive actions and stats
 - **Danger:** Red (#ef4444) - Destructive actions and alerts
 - **Neutrals:** Gray scale for text and backgrounds
+- **Accents:** White (#ffffff) for contrast and emphasis
 
 ---
 
