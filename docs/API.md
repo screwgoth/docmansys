@@ -366,6 +366,356 @@ Get system statistics and metrics.
 
 ---
 
+## Masters Management Endpoints
+
+All masters endpoints require `admin` role (except GET endpoints which are accessible to `admin` and `manager` roles).
+
+### Document Types
+
+#### GET /masters/document-types
+
+List all document types.
+
+**Response (200):**
+```json
+{
+  "documentTypes": [
+    {
+      "id": "1",
+      "name": "Loan Application",
+      "description": "Standard loan application form",
+      "requiredFields": ["applicantName", "loanAmount", "purpose"],
+      "validationRules": {},
+      "isActive": true,
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z"
+    }
+  ],
+  "count": 1
+}
+```
+
+#### POST /masters/document-types
+
+Create a new document type.
+
+**Request:**
+```json
+{
+  "name": "Loan Application",
+  "description": "Standard loan application form",
+  "requiredFields": ["applicantName", "loanAmount", "purpose"],
+  "validationRules": {
+    "loanAmount": { "min": 10000, "max": 10000000 }
+  }
+}
+```
+
+**Response (201):**
+```json
+{
+  "message": "Document type created successfully",
+  "documentType": { ... }
+}
+```
+
+#### PUT /masters/document-types/:id
+
+Update a document type.
+
+**Request:**
+```json
+{
+  "name": "Updated Name",
+  "description": "Updated description",
+  "requiredFields": ["field1", "field2"],
+  "validationRules": {},
+  "isActive": true
+}
+```
+
+**Response (200):**
+```json
+{
+  "message": "Document type updated successfully",
+  "documentType": { ... }
+}
+```
+
+#### DELETE /masters/document-types/:id
+
+Delete (deactivate) a document type.
+
+**Response (200):**
+```json
+{
+  "message": "Document type deleted successfully"
+}
+```
+
+### User Roles
+
+#### GET /masters/roles
+
+List all user roles.
+
+**Response (200):**
+```json
+{
+  "roles": [
+    {
+      "id": "1",
+      "roleName": "loan_officer",
+      "permissions": ["document:create", "document:read"],
+      "description": "Loan officer role",
+      "isActive": true,
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z"
+    }
+  ],
+  "count": 1,
+  "availablePermissions": [
+    "document:create",
+    "document:read",
+    "document:update",
+    "document:delete",
+    "document:approve",
+    "user:manage",
+    "admin:access",
+    "audit:view"
+  ]
+}
+```
+
+#### POST /masters/roles
+
+Create a new user role.
+
+**Request:**
+```json
+{
+  "roleName": "loan_officer",
+  "permissions": ["document:create", "document:read"],
+  "description": "Loan officer role"
+}
+```
+
+**Response (201):**
+```json
+{
+  "message": "User role created successfully",
+  "role": { ... }
+}
+```
+
+#### PUT /masters/roles/:id
+
+Update a user role.
+
+**Request:**
+```json
+{
+  "roleName": "senior_loan_officer",
+  "permissions": ["document:create", "document:read", "document:approve"],
+  "description": "Senior loan officer with approval rights",
+  "isActive": true
+}
+```
+
+**Response (200):**
+```json
+{
+  "message": "User role updated successfully",
+  "role": { ... }
+}
+```
+
+#### DELETE /masters/roles/:id
+
+Delete (deactivate) a user role.
+
+**Response (200):**
+```json
+{
+  "message": "User role deleted successfully"
+}
+```
+
+### Departments
+
+#### GET /masters/departments
+
+List all departments.
+
+**Response (200):**
+```json
+{
+  "departments": [
+    {
+      "id": "1",
+      "name": "Mumbai Branch",
+      "location": "Mumbai, Maharashtra",
+      "contactPerson": "John Doe",
+      "contactEmail": "mumbai@example.com",
+      "contactPhone": "+91 22 1234 5678",
+      "parentDepartmentId": null,
+      "isActive": true,
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z"
+    }
+  ],
+  "count": 1
+}
+```
+
+#### POST /masters/departments
+
+Create a new department.
+
+**Request:**
+```json
+{
+  "name": "Mumbai Branch",
+  "location": "Mumbai, Maharashtra",
+  "contactPerson": "John Doe",
+  "contactEmail": "mumbai@example.com",
+  "contactPhone": "+91 22 1234 5678",
+  "parentDepartmentId": null
+}
+```
+
+**Response (201):**
+```json
+{
+  "message": "Department created successfully",
+  "department": { ... }
+}
+```
+
+#### PUT /masters/departments/:id
+
+Update a department.
+
+**Request:**
+```json
+{
+  "name": "Mumbai Central Branch",
+  "location": "Mumbai Central, Maharashtra",
+  "contactPerson": "Jane Smith",
+  "contactEmail": "mumbai@example.com",
+  "contactPhone": "+91 22 1234 5678",
+  "isActive": true
+}
+```
+
+**Response (200):**
+```json
+{
+  "message": "Department updated successfully",
+  "department": { ... }
+}
+```
+
+#### DELETE /masters/departments/:id
+
+Delete (deactivate) a department.
+
+**Response (200):**
+```json
+{
+  "message": "Department deleted successfully"
+}
+```
+
+### Retention Policies
+
+#### GET /masters/retention-policies
+
+List all retention policies.
+
+**Response (200):**
+```json
+{
+  "policies": [
+    {
+      "id": "1",
+      "documentTypeId": "1",
+      "documentTypeName": "Loan Application",
+      "retentionPeriodMonths": 84,
+      "description": "Retain for 7 years as per regulations",
+      "autoDeleteEnabled": false,
+      "archiveAfterMonths": 36,
+      "isActive": true,
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z"
+    }
+  ],
+  "count": 1
+}
+```
+
+#### POST /masters/retention-policies
+
+Create a new retention policy.
+
+**Request:**
+```json
+{
+  "documentTypeId": "1",
+  "documentTypeName": "Loan Application",
+  "retentionPeriodMonths": 84,
+  "description": "Retain for 7 years as per regulations",
+  "autoDeleteEnabled": false,
+  "archiveAfterMonths": 36
+}
+```
+
+**Response (201):**
+```json
+{
+  "message": "Retention policy created successfully",
+  "policy": { ... }
+}
+```
+
+#### PUT /masters/retention-policies/:id
+
+Update a retention policy.
+
+**Request:**
+```json
+{
+  "documentTypeId": "1",
+  "documentTypeName": "Loan Application",
+  "retentionPeriodMonths": 96,
+  "description": "Updated retention period to 8 years",
+  "autoDeleteEnabled": true,
+  "archiveAfterMonths": 36,
+  "isActive": true
+}
+```
+
+**Response (200):**
+```json
+{
+  "message": "Retention policy updated successfully",
+  "policy": { ... }
+}
+```
+
+#### DELETE /masters/retention-policies/:id
+
+Delete (deactivate) a retention policy.
+
+**Response (200):**
+```json
+{
+  "message": "Retention policy deleted successfully"
+}
+```
+
+---
+
 ## Rate Limiting
 
 *To be implemented*

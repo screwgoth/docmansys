@@ -8,6 +8,7 @@ const logger = require('./utils/logger');
 const authRoutes = require('./api/auth');
 const documentRoutes = require('./api/documents');
 const adminRoutes = require('./api/admin');
+const mastersRoutes = require('./api/masters');
 
 const app = express();
 
@@ -16,6 +17,9 @@ app.use(helmet()); // Security headers
 app.use(cors()); // CORS
 app.use(express.json()); // JSON body parser
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static files
+app.use(express.static('public'));
 
 // Request logging
 app.use((req, res, next) => {
@@ -37,6 +41,7 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/masters', mastersRoutes);
 
 // 404 handler
 app.use((req, res) => {
