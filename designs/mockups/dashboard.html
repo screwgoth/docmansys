@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocManSys - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            background: #f8f9fa;
+            color: #212529;
+        }
+        
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: #fff;
+            border-right: 1px solid #e9ecef;
+            padding: 24px 0;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo {
+            padding: 0 24px 32px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #6366f1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+        
+        .nav-menu {
+            flex: 1;
+            padding: 0 16px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            margin-bottom: 4px;
+            border-radius: 8px;
+            color: #6c757d;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .nav-item:hover {
+            background: #f8f9fa;
+            color: #212529;
+        }
+        
+        .nav-item.active {
+            background: #6366f1;
+            color: white;
+        }
+        
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .main-content {
+            margin-left: 260px;
+            padding: 32px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #212529;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            background: white;
+            border-radius: 50px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #212529;
+        }
+        
+        .stat-trend {
+            font-size: 13px;
+            color: #10b981;
+            margin-top: 8px;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            padding: 24px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #212529;
+        }
+        
+        .view-all {
+            font-size: 14px;
+            color: #6366f1;
+            cursor: pointer;
+        }
+        
+        .recent-docs {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .doc-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        
+        .doc-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .doc-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        .doc-icon.pdf {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+        
+        .doc-icon.docx {
+            background: #eff6ff;
+            color: #3b82f6;
+        }
+        
+        .doc-icon.xlsx {
+            background: #f0fdf4;
+            color: #10b981;
+        }
+        
+        .doc-info {
+            flex: 1;
+        }
+        
+        .doc-name {
+            font-weight: 500;
+            color: #212529;
+            margin-bottom: 4px;
+        }
+        
+        .doc-meta {
+            font-size: 13px;
+            color: #6c757d;
+        }
+        
+        .activity-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .activity-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #6366f1;
+            margin-top: 6px;
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-text {
+            font-size: 14px;
+            color: #212529;
+            margin-bottom: 4px;
+        }
+        
+        .activity-time {
+            font-size: 12px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">📄</div>
+            DocManSys
+        </div>
+        <nav class="nav-menu">
+            <div class="nav-item active">
+                <span class="nav-icon">🏠</span>
+                Dashboard
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">📁</span>
+                Documents
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">🔍</span>
+                Search
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">⬆️</span>
+                Upload
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">⭐</span>
+                Favorites
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">🗑️</span>
+                Trash
+            </div>
+        </nav>
+        <div class="nav-menu" style="border-top: 1px solid #e9ecef; padding-top: 16px; margin-top: 16px;">
+            <div class="nav-item">
+                <span class="nav-icon">⚙️</span>
+                Settings
+            </div>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <div class="header">
+            <h1>Dashboard</h1>
+            <div class="user-profile">
+                <div class="avatar">R</div>
+                <span>Raseel</span>
+            </div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Documents</div>
+                <div class="stat-value">1,247</div>
+                <div class="stat-trend">↑ 12% from last month</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Storage Used</div>
+                <div class="stat-value">45.2 GB</div>
+                <div class="stat-trend">↑ 8% from last month</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Shared Files</div>
+                <div class="stat-value">328</div>
+                <div class="stat-trend">↑ 15% from last month</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Team Members</div>
+                <div class="stat-value">12</div>
+                <div class="stat-trend">+2 new members</div>
+            </div>
+        </div>
+        
+        <div class="content-grid">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Recent Documents</h2>
+                    <span class="view-all">View All →</span>
+                </div>
+                <div class="recent-docs">
+                    <div class="doc-item">
+                        <div class="doc-icon pdf">📄</div>
+                        <div class="doc-info">
+                            <div class="doc-name">Q4 Financial Report.pdf</div>
+                            <div class="doc-meta">Modified 2 hours ago • 2.4 MB</div>
+                        </div>
+                    </div>
+                    <div class="doc-item">
+                        <div class="doc-icon docx">📘</div>
+                        <div class="doc-info">
+                            <div class="doc-name">Project Proposal.docx</div>
+                            <div class="doc-meta">Modified 5 hours ago • 1.8 MB</div>
+                        </div>
+                    </div>
+                    <div class="doc-item">
+                        <div class="doc-icon xlsx">📊</div>
+                        <div class="doc-info">
+                            <div class="doc-name">Sales Data 2024.xlsx</div>
+                            <div class="doc-meta">Modified yesterday • 3.2 MB</div>
+                        </div>
+                    </div>
+                    <div class="doc-item">
+                        <div class="doc-icon pdf">📄</div>
+                        <div class="doc-info">
+                            <div class="doc-name">User Research Findings.pdf</div>
+                            <div class="doc-meta">Modified 2 days ago • 5.1 MB</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Recent Activity</h2>
+                </div>
+                <div class="recent-activity">
+                    <div class="activity-item">
+                        <div class="activity-dot"></div>
+                        <div class="activity-content">
+                            <div class="activity-text"><strong>Sarah</strong> uploaded 3 files</div>
+                            <div class="activity-time">15 minutes ago</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-dot"></div>
+                        <div class="activity-content">
+                            <div class="activity-text"><strong>John</strong> shared "Q4 Report"</div>
+                            <div class="activity-time">1 hour ago</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-dot"></div>
+                        <div class="activity-content">
+                            <div class="activity-text"><strong>You</strong> created a new folder</div>
+                            <div class="activity-time">3 hours ago</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-dot"></div>
+                        <div class="activity-content">
+                            <div class="activity-text"><strong>Mike</strong> commented on a file</div>
+                            <div class="activity-time">5 hours ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocManSys - Document Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            background: #f8f9fa;
+            color: #212529;
+            overflow: hidden;
+        }
+        
+        .viewer-container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        .doc-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #2d3748;
+        }
+        
+        .viewer-toolbar {
+            background: #1a202c;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #374151;
+        }
+        
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .btn-back {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
+        }
+        
+        .doc-title {
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .toolbar-center {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .toolbar-btn {
+            background: #374151;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        
+        .toolbar-btn:hover {
+            background: #4b5563;
+        }
+        
+        .zoom-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #374151;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+        
+        .zoom-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px 8px;
+        }
+        
+        .zoom-level {
+            color: white;
+            font-size: 14px;
+            min-width: 50px;
+            text-align: center;
+        }
+        
+        .toolbar-right {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .doc-viewer {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            overflow: auto;
+        }
+        
+        .doc-page {
+            background: white;
+            width: 100%;
+            max-width: 800px;
+            min-height: 1000px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            padding: 80px;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        
+        .page-header {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .page-section {
+            margin-bottom: 24px;
+        }
+        
+        .page-section h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #374151;
+        }
+        
+        .page-section p {
+            color: #6c757d;
+            margin-bottom: 12px;
+        }
+        
+        .info-sidebar {
+            width: 320px;
+            background: white;
+            border-left: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 4px;
+        }
+        
+        .sidebar-subtitle {
+            font-size: 13px;
+            color: #6c757d;
+        }
+        
+        .sidebar-content {
+            padding: 24px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .info-group {
+            margin-bottom: 24px;
+        }
+        
+        .info-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #6c757d;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+        
+        .info-value {
+            font-size: 14px;
+            color: #212529;
+            margin-bottom: 4px;
+        }
+        
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .tag {
+            padding: 4px 12px;
+            background: #f1f5f9;
+            border-radius: 16px;
+            font-size: 12px;
+            color: #475569;
+        }
+        
+        .share-users {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        
+        .share-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-size: 14px;
+            color: #212529;
+            font-weight: 500;
+        }
+        
+        .user-role {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        
+        .btn-action {
+            padding: 12px;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+            transition: background 0.2s;
+        }
+        
+        .btn-action:hover {
+            background: #4f46e5;
+        }
+        
+        .btn-action.secondary {
+            background: #f8f9fa;
+            color: #212529;
+            border: 1px solid #e9ecef;
+        }
+        
+        .btn-action.secondary:hover {
+            background: #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="viewer-container">
+        <div class="doc-panel">
+            <div class="viewer-toolbar">
+                <div class="toolbar-left">
+                    <button class="btn-back">←</button>
+                    <div class="doc-title">Q4 Financial Report.pdf</div>
+                </div>
+                <div class="toolbar-center">
+                    <div class="zoom-control">
+                        <button class="zoom-btn">−</button>
+                        <span class="zoom-level">100%</span>
+                        <button class="zoom-btn">+</button>
+                    </div>
+                    <button class="toolbar-btn">◀ Previous</button>
+                    <span style="color: white; font-size: 14px;">1 / 24</span>
+                    <button class="toolbar-btn">Next ▶</button>
+                </div>
+                <div class="toolbar-right">
+                    <button class="toolbar-btn">↓ Download</button>
+                    <button class="toolbar-btn">🖨️ Print</button>
+                    <button class="toolbar-btn">⋮</button>
+                </div>
+            </div>
+            
+            <div class="doc-viewer">
+                <div class="doc-page">
+                    <div class="page-header">Q4 Financial Report 2024</div>
+                    
+                    <div class="page-section">
+                        <h2>Executive Summary</h2>
+                        <p>This report provides a comprehensive overview of the company's financial performance during the fourth quarter of 2024. The analysis includes revenue growth, expense management, and strategic investment outcomes.</p>
+                        <p>Key highlights demonstrate strong year-over-year growth across all major business segments, with particular strength in our digital transformation initiatives and customer acquisition metrics.</p>
+                    </div>
+                    
+                    <div class="page-section">
+                        <h2>Revenue Analysis</h2>
+                        <p>Total revenue for Q4 2024 reached $45.2M, representing a 23% increase compared to Q4 2023. This growth was primarily driven by:</p>
+                        <p>• Enterprise sales growth of 31%<br>
+                        • Subscription revenue increase of 28%<br>
+                        • Strategic partnership revenues of $3.4M</p>
+                    </div>
+                    
+                    <div class="page-section">
+                        <h2>Operational Expenses</h2>
+                        <p>Operating expenses totaled $32.1M for the quarter, with the following breakdown:</p>
+                        <p>• Personnel costs: $18.5M (57.6%)<br>
+                        • Technology infrastructure: $7.2M (22.4%)<br>
+                        • Marketing and sales: $4.8M (14.9%)<br>
+                        • General and administrative: $1.6M (5.0%)</p>
+                    </div>
+                    
+                    <div class="page-section">
+                        <h2>Looking Ahead</h2>
+                        <p>As we enter 2025, our strategic focus remains on sustainable growth, operational efficiency, and continued investment in innovation. The strong Q4 performance positions us well for the upcoming fiscal year.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">Document Info</div>
+                <div class="sidebar-subtitle">Details and sharing</div>
+            </div>
+            
+            <div class="sidebar-content">
+                <div class="info-group">
+                    <div class="info-label">Type</div>
+                    <div class="info-value">PDF Document</div>
+                </div>
+                
+                <div class="info-group">
+                    <div class="info-label">Size</div>
+                    <div class="info-value">2.4 MB</div>
+                </div>
+                
+                <div class="info-group">
+                    <div class="info-label">Created</div>
+                    <div class="info-value">Jan 15, 2025 at 2:30 PM</div>
+                </div>
+                
+                <div class="info-group">
+                    <div class="info-label">Modified</div>
+                    <div class="info-value">2 hours ago</div>
+                </div>
+                
+                <div class="info-group">
+                    <div class="info-label">Owner</div>
+                    <div class="info-value">Raseel</div>
+                </div>
+                
+                <div class="info-group">
+                    <div class="info-label">Tags</div>
+                    <div class="tag-list">
+                        <span class="tag">Finance</span>
+                        <span class="tag">Q4 2024</span>
+                        <span class="tag">Report</span>
+                    </div>
+                </div>
+                
+                <div class="info-group">
+                    <div class="info-label">Shared With</div>
+                    <div class="share-users">
+                        <div class="share-user">
+                            <div class="user-avatar">S</div>
+                            <div class="user-info">
+                                <div class="user-name">Sarah Chen</div>
+                                <div class="user-role">Can edit</div>
+                            </div>
+                        </div>
+                        <div class="share-user">
+                            <div class="user-avatar">J</div>
+                            <div class="user-info">
+                                <div class="user-name">John Doe</div>
+                                <div class="user-role">Can view</div>
+                            </div>
+                        </div>
+                        <div class="share-user">
+                            <div class="user-avatar">M</div>
+                            <div class="user-info">
+                                <div class="user-name">Mike Ross</div>
+                                <div class="user-role">Can view</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn-action">Share Document</button>
+                <button class="btn-action secondary">Add to Favorites</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

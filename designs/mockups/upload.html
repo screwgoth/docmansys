@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocManSys - Upload</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            background: #f8f9fa;
+            color: #212529;
+        }
+        
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: #fff;
+            border-right: 1px solid #e9ecef;
+            padding: 24px 0;
+        }
+        
+        .logo {
+            padding: 0 24px 32px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #6366f1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+        
+        .nav-menu {
+            padding: 0 16px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            margin-bottom: 4px;
+            border-radius: 8px;
+            color: #6c757d;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .nav-item:hover {
+            background: #f8f9fa;
+            color: #212529;
+        }
+        
+        .nav-item.active {
+            background: #6366f1;
+            color: white;
+        }
+        
+        .main-content {
+            margin-left: 260px;
+            padding: 32px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 32px;
+        }
+        
+        .upload-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .upload-zone {
+            background: white;
+            border: 2px dashed #cbd5e1;
+            border-radius: 16px;
+            padding: 60px 40px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .upload-zone:hover {
+            border-color: #6366f1;
+            background: #f8f9ff;
+        }
+        
+        .upload-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin: 0 auto 24px;
+            color: white;
+        }
+        
+        .upload-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 8px;
+        }
+        
+        .upload-subtitle {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 24px;
+        }
+        
+        .btn-browse {
+            padding: 12px 32px;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-browse:hover {
+            background: #4f46e5;
+        }
+        
+        .file-types {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        
+        .upload-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 32px;
+        }
+        
+        .option-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .option-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-color: #6366f1;
+        }
+        
+        .option-icon {
+            width: 48px;
+            height: 48px;
+            background: #f8f9fa;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto 16px;
+        }
+        
+        .option-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 4px;
+        }
+        
+        .option-desc {
+            font-size: 13px;
+            color: #6c757d;
+        }
+        
+        .recent-uploads {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            padding: 24px;
+            margin-top: 32px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 20px;
+        }
+        
+        .upload-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            background: #f8f9fa;
+        }
+        
+        .upload-item-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            background: white;
+        }
+        
+        .upload-item-info {
+            flex: 1;
+        }
+        
+        .upload-item-name {
+            font-weight: 500;
+            color: #212529;
+            margin-bottom: 4px;
+        }
+        
+        .upload-item-meta {
+            font-size: 13px;
+            color: #6c757d;
+        }
+        
+        .upload-progress {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .progress-bar {
+            width: 120px;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
+            transition: width 0.3s;
+        }
+        
+        .upload-status {
+            font-size: 13px;
+            color: #10b981;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">📄</div>
+            DocManSys
+        </div>
+        <nav class="nav-menu">
+            <div class="nav-item">
+                <span class="nav-icon">🏠</span>
+                Dashboard
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">📁</span>
+                Documents
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">🔍</span>
+                Search
+            </div>
+            <div class="nav-item active">
+                <span class="nav-icon">⬆️</span>
+                Upload
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">⭐</span>
+                Favorites
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">🗑️</span>
+                Trash
+            </div>
+        </nav>
+    </div>
+    
+    <div class="main-content">
+        <div class="header">
+            <h1>Upload Files</h1>
+        </div>
+        
+        <div class="upload-container">
+            <div class="upload-zone">
+                <div class="upload-icon">📤</div>
+                <div class="upload-title">Drag & drop files here</div>
+                <div class="upload-subtitle">or click to browse from your computer</div>
+                <button class="btn-browse">Browse Files</button>
+                <div class="file-types">Supported: PDF, DOCX, XLSX, PPTX, JPG, PNG, ZIP (Max 50MB)</div>
+            </div>
+            
+            <div class="upload-options">
+                <div class="option-card">
+                    <div class="option-icon">📁</div>
+                    <div class="option-title">Upload Folder</div>
+                    <div class="option-desc">Upload an entire folder at once</div>
+                </div>
+                <div class="option-card">
+                    <div class="option-icon">🔗</div>
+                    <div class="option-title">From URL</div>
+                    <div class="option-desc">Import files from a web link</div>
+                </div>
+                <div class="option-card">
+                    <div class="option-icon">☁️</div>
+                    <div class="option-title">Cloud Import</div>
+                    <div class="option-desc">Import from Dropbox, Drive</div>
+                </div>
+            </div>
+            
+            <div class="recent-uploads">
+                <div class="section-title">Recent Uploads</div>
+                
+                <div class="upload-item">
+                    <div class="upload-item-icon">📄</div>
+                    <div class="upload-item-info">
+                        <div class="upload-item-name">Marketing Plan Q1.pdf</div>
+                        <div class="upload-item-meta">2.4 MB • Uploaded 5 minutes ago</div>
+                    </div>
+                    <div class="upload-progress">
+                        <div class="upload-status">✓ Complete</div>
+                    </div>
+                </div>
+                
+                <div class="upload-item">
+                    <div class="upload-item-icon">📊</div>
+                    <div class="upload-item-info">
+                        <div class="upload-item-name">Budget Analysis.xlsx</div>
+                        <div class="upload-item-meta">1.8 MB • Uploading...</div>
+                    </div>
+                    <div class="upload-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 65%"></div>
+                        </div>
+                        <span style="font-size: 13px; color: #6c757d;">65%</span>
+                    </div>
+                </div>
+                
+                <div class="upload-item">
+                    <div class="upload-item-icon">🖼️</div>
+                    <div class="upload-item-info">
+                        <div class="upload-item-name">Team_Photos_2024.zip</div>
+                        <div class="upload-item-meta">12.3 MB • Uploaded 1 hour ago</div>
+                    </div>
+                    <div class="upload-progress">
+                        <div class="upload-status">✓ Complete</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
