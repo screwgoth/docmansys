@@ -18,12 +18,22 @@ The DocManSys interface follows modern design principles:
 
 ### Color Palette
 
-- **Primary:** Black (#0a0a0a) - Bold, professional, modern
-- **Secondary:** Dark Gray (#1a1a1a) - Accent and gradient overlays
+- **Primary:** Charcoal (#1e1e1e) - Sophisticated, professional, modern
+- **Secondary:** Slate (#2d2d2d, #3d3d3d) - Depth and gradient layers
 - **Success:** Green (#10b981) - Positive actions and stats
 - **Danger:** Red (#ef4444) - Destructive actions and alerts
-- **Neutrals:** Gray scale for text and backgrounds
+- **Neutrals:** Warm grays (#f8f9fa, #e9ecef) for backgrounds
 - **Accents:** White (#ffffff) for contrast and emphasis
+
+### Gradient Strategy
+
+Gradients are used throughout to add depth, visual interest, and modern aesthetics:
+- **Sidebar:** Vertical gradient (#ffffff → #fafafa)
+- **Cards:** Diagonal gradients (#ffffff → #f5f5f7)
+- **Buttons:** Charcoal gradients (#2d2d2d → #3d3d3d)
+- **Logo/Icons:** Layered slate gradients for depth
+- **Background:** Subtle page gradient (#f8f9fa → #e9ecef)
+- **Hover states:** Enhanced gradients with stronger contrast
 
 ---
 
