@@ -10,6 +10,8 @@ class User {
     this.email = data.email;
     this.passwordHash = data.passwordHash;
     this.role = data.role;
+    this.roleId = data.roleId;
+    this.permissions = data.permissions || [];
     this.fullName = data.fullName;
     this.isActive = data.isActive !== undefined ? data.isActive : true;
     this.createdAt = data.createdAt || new Date();

@@ -1,18 +1,24 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcrypt');
-const { authenticate, hasRole } = require('../middleware/auth');
-const User = require('../models/user');
+const { authenticate, hasPermission } = require('../middleware/auth');
+const UserRepository = require('../repositories/userRepository');
+const RoleRepository = require('../repositories/roleRepository');
 const logger = require('../utils/logger');
 
 /**
  * GET /api/admin/users
  * List all users
  */
-router.get('/users', authenticate, hasRole([User.ROLES.ADMIN]), async (req, res) => {
+router.get('/users', authenticate, hasPermission('user:manage'), async (req, res) => {
   try {
-    // TODO: Fetch from database
-    const users = [];
+    const { isActive, roleId, limit } = req.query;
+
+    const filters = {};
+    if (isActive !== undefined) filters.isActive = isActive === 'true';
+    if (roleId) filters.roleId = roleId;
+    if (limit) filters.limit = parseInt(limit);
+
+    const users = await UserRepository.findAll(filters);
 
     logger.info(`User list accessed by ${req.user.username}`);
 
@@ -27,37 +33,75 @@ router.get('/users', authenticate, hasRole([User.ROLES.ADMIN]), async (req, res)
 });
 
 /**
+ * GET /api/admin/users/:userId
+ * Get specific user details
+ */
+router.get('/users/:userId', authenticate, hasPermission('user:manage'), async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await UserRepository.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    logger.info(`User details accessed: ${userId} by ${req.user.username}`);
+
+    res.json({
+      user: user.toJSON()
+    });
+  } catch (error) {
+    logger.error(`Get user details error: ${error.message}`);
+    res.status(500).json({ error: 'Failed to fetch user details' });
+  }
+});
+
+/**
  * POST /api/admin/users
  * Create a new user
  */
-router.post('/users', authenticate, hasRole([User.ROLES.ADMIN]), async (req, res) => {
+router.post('/users', authenticate, hasPermission('user:manage'), async (req, res) => {
   try {
-    const { username, email, password, role, fullName } = req.body;
+    const { username, email, password, roleId, fullName } = req.body;
 
-    if (!username || !email || !password || !role) {
+    // Validation
+    if (!username || !email || !password || !roleId) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    if (!Object.values(User.ROLES).includes(role)) {
-      return res.status(400).json({ 
-        error: 'Invalid role',
-        allowedRoles: Object.values(User.ROLES)
-      });
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters' });
     }
 
-    // Hash password
-    const passwordHash = await bcrypt.hash(password, 10);
+    // Check if username already exists
+    const existingUser = await UserRepository.findByUsername(username);
+    if (existingUser) {
+      return res.status(400).json({ error: 'Username already exists' });
+    }
 
-    // TODO: Save to database
-    const user = new User({
+    // Check if email already exists
+    const existingEmail = await UserRepository.findByEmail(email);
+    if (existingEmail) {
+      return res.status(400).json({ error: 'Email already exists' });
+    }
+
+    // Verify role exists
+    const role = await RoleRepository.findById(roleId);
+    if (!role) {
+      return res.status(400).json({ error: 'Invalid role' });
+    }
+
+    // Create user
+    const user = await UserRepository.create({
       username,
       email,
-      passwordHash,
-      role,
+      password,
+      roleId,
       fullName
     });
 
-    logger.info(`User created: ${username} with role ${role} by ${req.user.username}`);
+    logger.info(`User created: ${username} with role ${role.roleName} by ${req.user.username}`);
 
     res.status(201).json({
       message: 'User created successfully',
@@ -73,17 +117,43 @@ router.post('/users', authenticate, hasRole([User.ROLES.ADMIN]), async (req, res
  * PUT /api/admin/users/:userId
  * Update user details
  */
-router.put('/users/:userId', authenticate, hasRole([User.ROLES.ADMIN]), async (req, res) => {
+router.put('/users/:userId', authenticate, hasPermission('user:manage'), async (req, res) => {
   try {
     const { userId } = req.params;
-    const { role, isActive, fullName } = req.body;
+    const { roleId, isActive, fullName, email } = req.body;
 
-    // TODO: Update in database
+    const updates = {};
+    if (roleId) {
+      // Verify role exists
+      const role = await RoleRepository.findById(roleId);
+      if (!role) {
+        return res.status(400).json({ error: 'Invalid role' });
+      }
+      updates.roleId = roleId;
+    }
+
+    if (isActive !== undefined) updates.isActive = isActive;
+    if (fullName) updates.fullName = fullName;
+    if (email) {
+      // Check if email already used by another user
+      const existingEmail = await UserRepository.findByEmail(email);
+      if (existingEmail && existingEmail.id !== userId) {
+        return res.status(400).json({ error: 'Email already in use' });
+      }
+      updates.email = email;
+    }
+
+    const user = await UserRepository.update(userId, updates);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
 
     logger.info(`User updated: ${userId} by ${req.user.username}`);
 
     res.json({
-      message: 'User updated successfully'
+      message: 'User updated successfully',
+      user: user.toJSON()
     });
   } catch (error) {
     logger.error(`Update user error: ${error.message}`);
@@ -95,11 +165,16 @@ router.put('/users/:userId', authenticate, hasRole([User.ROLES.ADMIN]), async (r
  * DELETE /api/admin/users/:userId
  * Deactivate a user
  */
-router.delete('/users/:userId', authenticate, hasRole([User.ROLES.ADMIN]), async (req, res) => {
+router.delete('/users/:userId', authenticate, hasPermission('user:manage'), async (req, res) => {
   try {
     const { userId } = req.params;
 
-    // TODO: Mark as inactive in database
+    // Prevent self-deletion
+    if (userId === req.user.id) {
+      return res.status(400).json({ error: 'Cannot deactivate your own account' });
+    }
+
+    await UserRepository.deactivate(userId);
 
     logger.info(`User deactivated: ${userId} by ${req.user.username}`);
 
@@ -116,16 +191,22 @@ router.delete('/users/:userId', authenticate, hasRole([User.ROLES.ADMIN]), async
  * GET /api/admin/stats
  * Get system statistics
  */
-router.get('/stats', authenticate, hasRole([User.ROLES.ADMIN, User.ROLES.AUDITOR]), async (req, res) => {
+router.get('/stats', authenticate, hasPermission('admin:access'), async (req, res) => {
   try {
-    // TODO: Calculate stats from database
+    const { query } = require('../db/connection');
+
+    // Get various statistics
+    const [totalUsers, activeUsers, totalDocs] = await Promise.all([
+      query('SELECT COUNT(*) as count FROM users'),
+      query('SELECT COUNT(*) as count FROM users WHERE is_active = true'),
+      query('SELECT COUNT(*) as count FROM documents')
+    ]);
+
     const stats = {
-      totalDocuments: 0,
-      documentsThisMonth: 0,
-      totalUsers: 0,
-      activeUsers: 0,
-      storageUsed: '0 MB',
-      documentsByType: {}
+      totalUsers: parseInt(totalUsers.rows[0].count),
+      activeUsers: parseInt(activeUsers.rows[0].count),
+      totalDocuments: parseInt(totalDocs.rows[0].count),
+      timestamp: new Date().toISOString()
     };
 
     logger.info(`Stats accessed by ${req.user.username}`);

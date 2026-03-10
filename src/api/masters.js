@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { authenticate, hasRole } = require('../middleware/auth');
-const User = require('../models/user');
+const { authenticate, hasPermission } = require('../middleware/auth');
+const RoleRepository = require('../repositories/roleRepository');
 const DocumentType = require('../models/documentType');
 const UserRole = require('../models/userRole');
 const Department = require('../models/department');
@@ -130,17 +130,17 @@ router.delete('/document-types/:id', authenticate, hasRole([User.ROLES.ADMIN]), 
  * GET /api/masters/roles
  * List all user roles
  */
-router.get('/roles', authenticate, hasRole([User.ROLES.ADMIN]), async (req, res) => {
+router.get('/roles', authenticate, hasPermission('admin:access'), async (req, res) => {
   try {
-    // TODO: Fetch from database
-    const roles = [];
+    const includeInactive = req.query.includeInactive === 'true';
+    const roles = await RoleRepository.findAll(includeInactive);
 
     logger.info(`User roles list accessed by ${req.user.username}`);
 
     res.json({
       roles: roles.map(r => r.toJSON()),
       count: roles.length,
-      availablePermissions: Object.values(UserRole.PERMISSIONS)
+      availablePermissions: RoleRepository.getAvailablePermissions()
     });
   } catch (error) {
     logger.error(`User roles list error: ${error.message}`);
@@ -149,25 +149,64 @@ router.get('/roles', authenticate, hasRole([User.ROLES.ADMIN]), async (req, res)
 });
 
 /**
+ * GET /api/masters/roles/:id
+ * Get specific role details
+ */
+router.get('/roles/:id', authenticate, hasPermission('admin:access'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const role = await RoleRepository.findById(id);
+
+    if (!role) {
+      return res.status(404).json({ error: 'Role not found' });
+    }
+
+    logger.info(`Role details accessed: ${id} by ${req.user.username}`);
+
+    res.json({
+      role: role.toJSON()
+    });
+  } catch (error) {
+    logger.error(`Get role details error: ${error.message}`);
+    res.status(500).json({ error: 'Failed to fetch role details' });
+  }
+});
+
+/**
  * POST /api/masters/roles
  * Create a new user role
  */
-router.post('/roles', authenticate, hasRole([User.ROLES.ADMIN]), async (req, res) => {
+router.post('/roles', authenticate, hasPermission('admin:access'), async (req, res) => {
   try {
     const { roleName, permissions, description } = req.body;
 
-    const role = new UserRole({
+    // Validation
+    if (!roleName || !permissions) {
+      return res.status(400).json({ error: 'Role name and permissions are required' });
+    }
+
+    // Check if role already exists
+    const existing = await RoleRepository.findByName(roleName);
+    if (existing) {
+      return res.status(400).json({ error: 'Role name already exists' });
+    }
+
+    // Validate permissions
+    const validPermissions = RoleRepository.getAvailablePermissions();
+    const invalidPerms = permissions.filter(p => !validPermissions.includes(p));
+    if (invalidPerms.length > 0) {
+      return res.status(400).json({ 
+        error: 'Invalid permissions',
+        invalid: invalidPerms,
+        valid: validPermissions
+      });
+    }
+
+    const role = await RoleRepository.create({
       roleName,
       permissions,
       description
     });
-
-    const errors = role.validate();
-    if (errors.length > 0) {
-      return res.status(400).json({ error: 'Validation failed', errors });
-    }
-
-    // TODO: Save to database
 
     logger.info(`User role created: ${roleName} by ${req.user.username}`);
 
@@ -185,26 +224,44 @@ router.post('/roles', authenticate, hasRole([User.ROLES.ADMIN]), async (req, res
  * PUT /api/masters/roles/:id
  * Update a user role
  */
-router.put('/roles/:id', authenticate, hasRole([User.ROLES.ADMIN]), async (req, res) => {
+router.put('/roles/:id', authenticate, hasPermission('admin:access'), async (req, res) => {
   try {
     const { id } = req.params;
     const { roleName, permissions, description, isActive } = req.body;
 
-    const role = new UserRole({
-      id,
-      roleName,
-      permissions,
-      description,
-      isActive,
-      updatedAt: new Date()
-    });
-
-    const errors = role.validate();
-    if (errors.length > 0) {
-      return res.status(400).json({ error: 'Validation failed', errors });
+    // Check if role exists
+    const existing = await RoleRepository.findById(id);
+    if (!existing) {
+      return res.status(404).json({ error: 'Role not found' });
     }
 
-    // TODO: Update in database
+    // If changing role name, check uniqueness
+    if (roleName && roleName !== existing.roleName) {
+      const duplicate = await RoleRepository.findByName(roleName);
+      if (duplicate) {
+        return res.status(400).json({ error: 'Role name already exists' });
+      }
+    }
+
+    // Validate permissions if provided
+    if (permissions) {
+      const validPermissions = RoleRepository.getAvailablePermissions();
+      const invalidPerms = permissions.filter(p => !validPermissions.includes(p));
+      if (invalidPerms.length > 0) {
+        return res.status(400).json({ 
+          error: 'Invalid permissions',
+          invalid: invalidPerms
+        });
+      }
+    }
+
+    const updates = {};
+    if (roleName) updates.roleName = roleName;
+    if (permissions) updates.permissions = permissions;
+    if (description !== undefined) updates.description = description;
+    if (isActive !== undefined) updates.isActive = isActive;
+
+    const role = await RoleRepository.update(id, updates);
 
     logger.info(`User role updated: ${id} by ${req.user.username}`);
 
@@ -222,12 +279,11 @@ router.put('/roles/:id', authenticate, hasRole([User.ROLES.ADMIN]), async (req, 
  * DELETE /api/masters/roles/:id
  * Delete (deactivate) a user role
  */
-router.delete('/roles/:id', authenticate, hasRole([User.ROLES.ADMIN]), async (req, res) => {
+router.delete('/roles/:id', authenticate, hasPermission('admin:access'), async (req, res) => {
   try {
     const { id } = req.params;
 
-    // TODO: Check if role is in use
-    // TODO: Mark as inactive in database
+    await RoleRepository.deactivate(id);
 
     logger.info(`User role deleted: ${id} by ${req.user.username}`);
 
@@ -235,6 +291,9 @@ router.delete('/roles/:id', authenticate, hasRole([User.ROLES.ADMIN]), async (re
       message: 'User role deleted successfully'
     });
   } catch (error) {
+    if (error.message.includes('currently assigned')) {
+      return res.status(400).json({ error: error.message });
+    }
     logger.error(`Delete user role error: ${error.message}`);
     res.status(500).json({ error: 'Failed to delete user role' });
   }

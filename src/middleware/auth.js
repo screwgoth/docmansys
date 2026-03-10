@@ -1,9 +1,9 @@
 const jwt = require('jsonwebtoken');
 const config = require('../config');
-const User = require('../models/user');
+const UserRepository = require('../repositories/userRepository');
 
 /**
- * Verify JWT token
+ * Verify JWT token and attach user to request
  */
 const authenticate = async (req, res, next) => {
   try {
@@ -14,31 +14,46 @@ const authenticate = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, config.jwt.secret);
-    req.user = decoded; // Attach user info to request
+    
+    // Fetch fresh user data to ensure permissions are up-to-date
+    const user = await UserRepository.findById(decoded.id);
+    
+    if (!user) {
+      return res.status(401).json({ error: 'User not found' });
+    }
+
+    req.user = {
+      id: user.id,
+      username: user.username,
+      role: user.role,
+      permissions: user.permissions
+    };
+    
     next();
   } catch (error) {
-    return res.status(401).json({ error: 'Invalid or expired token' });
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ error: 'Token expired' });
+    }
+    return res.status(401).json({ error: 'Invalid token' });
   }
 };
 
 /**
  * Check if user has required permission
  */
-const authorize = (requiredPermission) => {
+const hasPermission = (requiredPermission) => {
   return (req, res, next) => {
-    const userRole = req.user?.role;
-    
-    if (!userRole) {
+    if (!req.user) {
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    const permissions = User.PERMISSIONS[userRole] || [];
+    const userPermissions = req.user.permissions || [];
     
-    if (!permissions.includes(requiredPermission)) {
+    if (!userPermissions.includes(requiredPermission)) {
       return res.status(403).json({ 
         error: 'Insufficient permissions',
         required: requiredPermission,
-        role: userRole
+        yourPermissions: userPermissions
       });
     }
 
@@ -47,16 +62,64 @@ const authorize = (requiredPermission) => {
 };
 
 /**
- * Check if user has one of the required roles
+ * Check if user has ANY of the required permissions
  */
-const hasRole = (allowedRoles) => {
+const hasAnyPermission = (requiredPermissions) => {
   return (req, res, next) => {
-    const userRole = req.user?.role;
-    
-    if (!userRole) {
+    if (!req.user) {
       return res.status(401).json({ error: 'Authentication required' });
     }
 
+    const userPermissions = req.user.permissions || [];
+    const hasPermission = requiredPermissions.some(perm => userPermissions.includes(perm));
+    
+    if (!hasPermission) {
+      return res.status(403).json({ 
+        error: 'Insufficient permissions',
+        required: requiredPermissions,
+        yourPermissions: userPermissions
+      });
+    }
+
+    next();
+  };
+};
+
+/**
+ * Check if user has ALL of the required permissions
+ */
+const hasAllPermissions = (requiredPermissions) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    const userPermissions = req.user.permissions || [];
+    const hasAllPerms = requiredPermissions.every(perm => userPermissions.includes(perm));
+    
+    if (!hasAllPerms) {
+      return res.status(403).json({ 
+        error: 'Insufficient permissions',
+        required: requiredPermissions,
+        yourPermissions: userPermissions
+      });
+    }
+
+    next();
+  };
+};
+
+/**
+ * Check if user has one of the required roles (for backward compatibility)
+ */
+const hasRole = (allowedRoles) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    const userRole = req.user.role;
+    
     if (!allowedRoles.includes(userRole)) {
       return res.status(403).json({ 
         error: 'Access denied',
@@ -71,6 +134,8 @@ const hasRole = (allowedRoles) => {
 
 module.exports = {
   authenticate,
-  authorize,
+  hasPermission,
+  hasAnyPermission,
+  hasAllPermissions,
   hasRole
 };
