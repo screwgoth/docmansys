@@ -12,14 +12,53 @@
         }
         
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
             min-height: 100vh;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
-            color: #1a202c;
+            color: #e5e7eb;
+        }
+        
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+            border: 2px solid #3a3a3a;
+            border-radius: 8px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+        
+        .mobile-menu-toggle span {
+            width: 20px;
+            height: 2px;
+            background: #ffffff;
+            transition: all 0.3s;
+        }
+        
+        .mobile-menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        
+        .mobile-menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .mobile-menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
         }
         
         .sidebar {
-            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
             position: fixed;
             left: 0;
             top: 0;
@@ -28,7 +67,10 @@
             padding: 24px 0;
             display: flex;
             flex-direction: column;
-            box-shadow: 4px 0 24px rgba(102, 126, 234, 0.15);
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.6);
+            border-right: 1px solid #2d2d2d;
+            z-index: 1000;
+            transition: transform 0.3s ease;
         }
         
         .logo {
@@ -44,7 +86,7 @@
         .logo-icon {
             width: 40px;
             height: 40px;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border-radius: 10px;
             display: flex;
@@ -52,7 +94,8 @@
             justify-content: center;
             color: white;
             font-size: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .nav-menu {
@@ -67,22 +110,23 @@
             padding: 12px 14px;
             margin-bottom: 4px;
             border-radius: 10px;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.6);
             cursor: pointer;
             transition: all 0.2s;
             font-size: 14px;
             font-weight: 600;
+            min-height: 44px;
         }
         
         .nav-item:hover {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.1);
             color: #ffffff;
         }
         
         .nav-item.active {
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.15);
             color: #ffffff;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
         
         .nav-icon {
@@ -96,6 +140,7 @@
         .main-content {
             margin-left: 260px;
             padding: 32px;
+            transition: margin-left 0.3s ease;
         }
         
         .header {
@@ -103,18 +148,21 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 16px;
         }
         
         .header h1 {
             font-size: 32px;
             font-weight: 700;
-            color: #1a202c;
+            color: #ffffff;
             letter-spacing: -0.5px;
         }
         
         .header-actions {
             display: flex;
             gap: 12px;
+            flex-wrap: wrap;
         }
         
         .btn {
@@ -128,41 +176,47 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            min-height: 44px;
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
             color: white;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            border: 2px solid #3a3a3a;
         }
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7);
+            border-color: #4a4a4a;
         }
         
         .btn-secondary {
-            background: #ffffff;
-            border: 2px solid #e8ecf1;
-            color: #475569;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            background: #1a1a1a;
+            border: 2px solid #2d2d2d;
+            color: #e5e7eb;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
         
         .btn-secondary:hover {
-            border-color: #667eea;
-            color: #667eea;
+            border-color: #3a3a3a;
+            color: #ffffff;
             transform: translateY(-2px);
         }
         
         .toolbar {
-            background: #ffffff;
+            background: #1a1a1a;
             padding: 20px 24px;
             border-radius: 16px;
             margin-bottom: 28px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+            border: 2px solid #2d2d2d;
+            flex-wrap: wrap;
+            gap: 16px;
         }
         
         .search-box {
@@ -171,16 +225,17 @@
             gap: 12px;
             flex: 1;
             max-width: 420px;
-            background: linear-gradient(135deg, #f7f9fc 0%, #eef2f7 100%);
+            min-width: 250px;
+            background: linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 100%);
             padding: 12px 16px;
             border-radius: 12px;
-            border: 2px solid #e8ecf1;
+            border: 2px solid #2d2d2d;
             transition: all 0.2s;
         }
         
         .search-box:focus-within {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #3a3a3a;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
         }
         
         .search-box input {
@@ -189,48 +244,50 @@
             outline: none;
             flex: 1;
             font-size: 14px;
-            color: #1a202c;
+            color: #ffffff;
             font-weight: 500;
         }
         
         .search-box input::placeholder {
-            color: #94a3b8;
+            color: #6b7280;
         }
         
         .filters {
             display: flex;
             gap: 12px;
             align-items: center;
+            flex-wrap: wrap;
         }
         
         .filter-btn {
             padding: 10px 16px;
             border-radius: 10px;
-            border: 2px solid #e8ecf1;
-            background: #ffffff;
+            border: 2px solid #2d2d2d;
+            background: #0d0d0d;
             font-size: 13px;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 8px;
-            color: #475569;
+            color: #e5e7eb;
             font-weight: 600;
             transition: all 0.2s;
+            min-height: 44px;
         }
         
         .filter-btn:hover {
-            border-color: #667eea;
-            color: #667eea;
+            border-color: #3a3a3a;
+            color: #ffffff;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
         }
         
         .view-toggle {
             display: flex;
-            background: linear-gradient(135deg, #f7f9fc 0%, #eef2f7 100%);
+            background: linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 100%);
             border-radius: 10px;
             padding: 4px;
-            border: 2px solid #e8ecf1;
+            border: 2px solid #2d2d2d;
         }
         
         .view-btn {
@@ -239,14 +296,14 @@
             background: none;
             cursor: pointer;
             border-radius: 8px;
-            color: #64748b;
+            color: #9ca3af;
             transition: all 0.2s;
         }
         
         .view-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
             color: #ffffff;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
         }
         
         .documents-grid {
@@ -256,18 +313,20 @@
         }
         
         .doc-card {
-            background: #ffffff;
+            background: #1a1a1a;
             border-radius: 16px;
             padding: 20px;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            border: 2px solid #2d2d2d;
         }
         
         .doc-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.8);
+            border-color: #3a3a3a;
         }
         
         .doc-preview {
@@ -287,38 +346,43 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, transparent 0%, rgba(0,0,0,0.05) 100%);
+            background: linear-gradient(135deg, transparent 0%, rgba(0,0,0,0.3) 100%);
         }
         
         .doc-preview.pdf {
-            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-            color: #dc2626;
+            background: linear-gradient(135deg, #3a1a1a 0%, #2d0d0d 100%);
+            color: #ef4444;
+            border: 1px solid #4a1a1a;
         }
         
         .doc-preview.docx {
-            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-            color: #2563eb;
+            background: linear-gradient(135deg, #1a2a3a 0%, #0d1a2d 100%);
+            color: #3b82f6;
+            border: 1px solid #1a3a5a;
         }
         
         .doc-preview.xlsx {
-            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-            color: #16a34a;
+            background: linear-gradient(135deg, #1a3a1a 0%, #0d2d0d 100%);
+            color: #22c55e;
+            border: 1px solid #1a4a1a;
         }
         
         .doc-preview.pptx {
-            background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
-            color: #ea580c;
+            background: linear-gradient(135deg, #3a2a1a 0%, #2d1a0d 100%);
+            color: #f97316;
+            border: 1px solid #4a3a1a;
         }
         
         .doc-preview.img {
-            background: linear-gradient(135deg, #faf5ff 0%, #e9d5ff 100%);
-            color: #9333ea;
+            background: linear-gradient(135deg, #2a1a3a 0%, #1a0d2d 100%);
+            color: #a855f7;
+            border: 1px solid #3a1a4a;
         }
         
         .doc-card-title {
             font-weight: 600;
             font-size: 14px;
-            color: #1a202c;
+            color: #ffffff;
             margin-bottom: 8px;
             white-space: nowrap;
             overflow: hidden;
@@ -327,7 +391,7 @@
         
         .doc-card-meta {
             font-size: 12px;
-            color: #718096;
+            color: #9ca3af;
             font-weight: 500;
         }
         
@@ -338,16 +402,17 @@
             width: 32px;
             height: 32px;
             border-radius: 8px;
-            background: #ffffff;
+            background: #0d0d0d;
             display: flex;
             align-items: center;
             justify-content: center;
             opacity: 0;
             transition: opacity 0.2s;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            color: #64748b;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            color: #e5e7eb;
             font-size: 16px;
             font-weight: 700;
+            border: 1px solid #2d2d2d;
         }
         
         .doc-card:hover .doc-menu {
@@ -360,8 +425,9 @@
             gap: 10px;
             margin-bottom: 24px;
             font-size: 14px;
-            color: #718096;
+            color: #9ca3af;
             font-weight: 500;
+            flex-wrap: wrap;
         }
         
         .breadcrumb-item {
@@ -372,17 +438,116 @@
         }
         
         .breadcrumb-item:hover:not(.active) {
-            color: #667eea;
+            color: #ffffff;
         }
         
         .breadcrumb-item.active {
-            color: #1a202c;
+            color: #ffffff;
             font-weight: 700;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: flex;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 80px 20px 24px;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .header-actions {
+                width: 100%;
+            }
+            
+            .btn {
+                flex: 1;
+                justify-content: center;
+            }
+            
+            .toolbar {
+                padding: 16px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                max-width: 100%;
+                width: 100%;
+            }
+            
+            .filters {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .documents-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 16px;
+            }
+            
+            .filter-btn {
+                flex: 1;
+                justify-content: center;
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+            
+            .view-toggle {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 80px 16px 20px;
+            }
+            
+            .documents-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .doc-preview {
+                height: 120px;
+            }
+            
+            .breadcrumb {
+                font-size: 12px;
+            }
+            
+            .filter-btn span {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="sidebar">
+    <button class="mobile-menu-toggle" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    
+    <div class="sidebar" id="sidebar">
         <div class="logo">
             <div class="logo-icon">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -449,7 +614,7 @@
                 Trash
             </div>
         </nav>
-        <div class="nav-menu" style="border-top: 1px solid rgba(255,255,255,0.15); padding-top: 12px; margin-top: auto;">
+        <div class="nav-menu" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; margin-top: auto;">
             <div class="nav-item">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -507,14 +672,14 @@
                         <line x1="8" y1="2" x2="8" y2="6"></line>
                         <line x1="3" y1="10" x2="21" y2="10"></line>
                     </svg>
-                    Date
+                    <span>Date</span>
                     <span style="font-size: 10px;">▼</span>
                 </button>
                 <button class="filter-btn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                     </svg>
-                    Type
+                    <span>Type</span>
                     <span style="font-size: 10px;">▼</span>
                 </button>
                 <button class="filter-btn">
@@ -522,7 +687,7 @@
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                         <circle cx="12" cy="7" r="4"></circle>
                     </svg>
-                    Owner
+                    <span>Owner</span>
                     <span style="font-size: 10px;">▼</span>
                 </button>
                 <div class="view-toggle">
@@ -686,5 +851,23 @@
             </div>
         </div>
     </div>
+    
+    <script>
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            sidebar.classList.toggle('active');
+            toggle.classList.toggle('active');
+        }
+        
+        // Close sidebar when clicking nav items on mobile
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    toggleMenu();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
