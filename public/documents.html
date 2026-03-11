@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documents - DocManSys</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <style>
+        body {
+            background: #0f172a;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #f8fafc;
+            font-size: 14px;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 16px;
+        }
+
+        .filter-select {
+            padding: 10px 16px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #f8fafc;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .view-toggle {
+            display: flex;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .view-btn {
+            padding: 10px 16px;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .view-btn.active {
+            background: #334155;
+            color: #3b82f6;
+        }
+
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .documents-list-view {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .doc-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .doc-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+
+        .doc-card-icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 16px;
+        }
+
+        .doc-card-title {
+            color: #f8fafc;
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .doc-card-meta {
+            color: #64748b;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .doc-list-item {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .doc-list-item:hover {
+            border-color: #3b82f6;
+            background: #334155;
+        }
+
+        .doc-list-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .doc-list-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .doc-list-title {
+            color: #f8fafc;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .doc-list-meta {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .doc-list-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .doc-action-btn {
+            padding: 8px 12px;
+            background: #334155;
+            border: none;
+            border-radius: 6px;
+            color: #cbd5e1;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .doc-action-btn:hover {
+            background: #475569;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .loading-container {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .documents-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <a href="/dashboard.html" class="logo">
+            <div class="logo-icon">📄</div>
+            <span>DocManSys</span>
+        </a>
+
+        <nav class="nav-menu">
+            <a href="/dashboard.html" class="nav-item">
+                <span class="nav-icon">📊</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="/documents.html" class="nav-item active">
+                <span class="nav-icon">📁</span>
+                <span>Documents</span>
+            </a>
+            <a href="/upload.html" class="nav-item">
+                <span class="nav-icon">⬆️</span>
+                <span>Upload</span>
+            </a>
+            <a href="/admin/index.html" class="nav-item" id="admin-link" style="display: none;">
+                <span class="nav-icon">⚙️</span>
+                <span>Admin</span>
+            </a>
+        </nav>
+
+        <div class="user-section">
+            <div class="user-profile" onclick="logout()">
+                <div class="avatar" id="user-avatar">U</div>
+                <div class="user-info">
+                    <div class="user-name" id="user-name">User</div>
+                    <div class="user-role" id="user-role">Role</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1>Documents</h1>
+            <a href="/upload.html" class="btn btn-primary">+ Upload Document</a>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="search-input" placeholder="Search documents...">
+            </div>
+
+            <select class="filter-select" id="type-filter">
+                <option value="">All Types</option>
+                <option value="application/pdf">PDF</option>
+                <option value="image">Images</option>
+                <option value="application/msword">Word</option>
+                <option value="application/vnd.ms-excel">Excel</option>
+            </select>
+
+            <select class="filter-select" id="sort-select">
+                <option value="date-desc">Newest First</option>
+                <option value="date-asc">Oldest First</option>
+                <option value="name-asc">Name (A-Z)</option>
+                <option value="name-desc">Name (Z-A)</option>
+                <option value="size-desc">Largest First</option>
+                <option value="size-asc">Smallest First</option>
+            </select>
+
+            <div class="view-toggle">
+                <button class="view-btn active" id="grid-view-btn" onclick="setView('grid')">📊</button>
+                <button class="view-btn" id="list-view-btn" onclick="setView('list')">📋</button>
+            </div>
+        </div>
+
+        <!-- Documents Container -->
+        <div id="documents-container">
+            <div class="loading-container">
+                <div class="loading"></div>
+                <p>Loading documents...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script>
+        checkAuth();
+
+        const user = getUser();
+        if (user) {
+            document.getElementById('user-name').textContent = user.username;
+            document.getElementById('user-role').textContent = user.role || 'User';
+            document.getElementById('user-avatar').textContent = user.username.charAt(0).toUpperCase();
+
+            if (user.role === 'admin' || user.role === 'superadmin') {
+                document.getElementById('admin-link').style.display = 'flex';
+            }
+        }
+
+        let allDocuments = [];
+        let currentView = 'grid';
+
+        // Load documents
+        async function loadDocuments() {
+            try {
+                const data = await apiRequest('/api/documents');
+                
+                if (data && data.documents) {
+                    allDocuments = data.documents;
+                    filterAndDisplayDocuments();
+                } else {
+                    displayEmptyState();
+                }
+            } catch (error) {
+                console.error('Error loading documents:', error);
+                showToast('Error loading documents', 'error');
+                displayEmptyState();
+            }
+        }
+
+        function filterAndDisplayDocuments() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const typeFilter = document.getElementById('type-filter').value;
+            const sortBy = document.getElementById('sort-select').value;
+
+            let filtered = allDocuments.filter(doc => {
+                const matchesSearch = !searchTerm || 
+                    (doc.original_filename || doc.filename || '').toLowerCase().includes(searchTerm) ||
+                    (doc.description || '').toLowerCase().includes(searchTerm);
+                
+                const matchesType = !typeFilter || 
+                    (typeFilter === 'image' ? doc.mime_type?.startsWith('image/') : doc.mime_type === typeFilter);
+
+                return matchesSearch && matchesType;
+            });
+
+            // Sort
+            filtered.sort((a, b) => {
+                switch (sortBy) {
+                    case 'date-desc':
+                        return new Date(b.uploaded_at) - new Date(a.uploaded_at);
+                    case 'date-asc':
+                        return new Date(a.uploaded_at) - new Date(b.uploaded_at);
+                    case 'name-asc':
+                        return (a.original_filename || a.filename || '').localeCompare(b.original_filename || b.filename || '');
+                    case 'name-desc':
+                        return (b.original_filename || b.filename || '').localeCompare(a.original_filename || a.filename || '');
+                    case 'size-desc':
+                        return (b.size || 0) - (a.size || 0);
+                    case 'size-asc':
+                        return (a.size || 0) - (b.size || 0);
+                    default:
+                        return 0;
+                }
+            });
+
+            displayDocuments(filtered);
+        }
+
+        function displayDocuments(documents) {
+            const container = document.getElementById('documents-container');
+
+            if (!documents || documents.length === 0) {
+                displayEmptyState();
+                return;
+            }
+
+            if (currentView === 'grid') {
+                container.innerHTML = `<div class="documents-grid">${documents.map(doc => `
+                    <div class="doc-card" onclick="viewDocument('${doc.id}')">
+                        <div class="doc-card-icon">${getFileIcon(doc.mime_type)}</div>
+                        <div class="doc-card-title">${doc.original_filename || doc.filename || 'Untitled'}</div>
+                        <div class="doc-card-meta">${formatFileSize(doc.size || 0)}</div>
+                        <div class="doc-card-meta">${formatDate(doc.uploaded_at)}</div>
+                    </div>
+                `).join('')}</div>`;
+            } else {
+                container.innerHTML = `<div class="documents-list-view">${documents.map(doc => `
+                    <div class="doc-list-item" onclick="viewDocument('${doc.id}')">
+                        <div class="doc-list-icon">${getFileIcon(doc.mime_type)}</div>
+                        <div class="doc-list-info">
+                            <div class="doc-list-title">${doc.original_filename || doc.filename || 'Untitled'}</div>
+                            <div class="doc-list-meta">${formatFileSize(doc.size || 0)} • Uploaded ${formatDate(doc.uploaded_at)}</div>
+                        </div>
+                        <div class="doc-list-actions">
+                            <button class="doc-action-btn" onclick="event.stopPropagation(); downloadDocument('${doc.id}')">Download</button>
+                        </div>
+                    </div>
+                `).join('')}</div>`;
+            }
+        }
+
+        function displayEmptyState() {
+            const container = document.getElementById('documents-container');
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <h3>No documents found</h3>
+                    <p>Try adjusting your search or filters</p>
+                </div>
+            `;
+        }
+
+        function getFileIcon(mimeType) {
+            if (!mimeType) return '📄';
+            if (mimeType.startsWith('image/')) return '🖼️';
+            if (mimeType === 'application/pdf') return '📕';
+            if (mimeType.includes('word')) return '📘';
+            if (mimeType.includes('excel') || mimeType.includes('spreadsheet')) return '📗';
+            if (mimeType.includes('powerpoint') || mimeType.includes('presentation')) return '📙';
+            return '📄';
+        }
+
+        function setView(view) {
+            currentView = view;
+            document.getElementById('grid-view-btn').classList.toggle('active', view === 'grid');
+            document.getElementById('list-view-btn').classList.toggle('active', view === 'list');
+            filterAndDisplayDocuments();
+        }
+
+        function viewDocument(id) {
+            window.location.href = `/viewer.html?id=${id}`;
+        }
+
+        async function downloadDocument(id) {
+            try {
+                showToast('Downloading...', 'info');
+                const token = getToken();
+                window.open(`/api/documents/${id}/download?token=${token}`, '_blank');
+            } catch (error) {
+                showToast('Download failed', 'error');
+            }
+        }
+
+        // Event listeners
+        document.getElementById('search-input').addEventListener('input', filterAndDisplayDocuments);
+        document.getElementById('type-filter').addEventListener('change', filterAndDisplayDocuments);
+        document.getElementById('sort-select').addEventListener('change', filterAndDisplayDocuments);
+
+        // Load documents on page load
+        loadDocuments();
+    </script>
+</body>
+</html>

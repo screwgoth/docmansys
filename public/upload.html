@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload - DocManSys</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <style>
+        body {
+            background: #0f172a;
+        }
+
+        .upload-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .dropzone {
+            background: #1e293b;
+            border: 2px dashed #334155;
+            border-radius: 12px;
+            padding: 60px 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 32px;
+        }
+
+        .dropzone.dragover {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .dropzone-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .dropzone-title {
+            color: #f8fafc;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .dropzone-text {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .dropzone-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        .upload-form {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 32px;
+            display: none;
+        }
+
+        .upload-form.show {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #cbd5e1;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 16px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #f8fafc;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .selected-file {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .file-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .file-details {
+            flex: 1;
+        }
+
+        .file-name {
+            color: #f8fafc;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .file-size {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .remove-file {
+            padding: 8px 16px;
+            background: #334155;
+            border: none;
+            border-radius: 6px;
+            color: #cbd5e1;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .remove-file:hover {
+            background: #475569;
+        }
+
+        .upload-progress {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .upload-progress.show {
+            display: block;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #334155;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            color: #94a3b8;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        @media (max-width: 768px) {
+            .dropzone {
+                padding: 40px 20px;
+            }
+
+            .upload-form {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <a href="/dashboard.html" class="logo">
+            <div class="logo-icon">📄</div>
+            <span>DocManSys</span>
+        </a>
+
+        <nav class="nav-menu">
+            <a href="/dashboard.html" class="nav-item">
+                <span class="nav-icon">📊</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="/documents.html" class="nav-item">
+                <span class="nav-icon">📁</span>
+                <span>Documents</span>
+            </a>
+            <a href="/upload.html" class="nav-item active">
+                <span class="nav-icon">⬆️</span>
+                <span>Upload</span>
+            </a>
+            <a href="/admin/index.html" class="nav-item" id="admin-link" style="display: none;">
+                <span class="nav-icon">⚙️</span>
+                <span>Admin</span>
+            </a>
+        </nav>
+
+        <div class="user-section">
+            <div class="user-profile" onclick="logout()">
+                <div class="avatar" id="user-avatar">U</div>
+                <div class="user-info">
+                    <div class="user-name" id="user-name">User</div>
+                    <div class="user-role" id="user-role">Role</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="upload-container">
+            <div class="header">
+                <h1>Upload Document</h1>
+            </div>
+
+            <!-- Dropzone -->
+            <div class="dropzone" id="dropzone">
+                <div class="dropzone-icon">📤</div>
+                <div class="dropzone-title">Drop your files here</div>
+                <div class="dropzone-text">or</div>
+                <label for="file-input" class="dropzone-button">Browse Files</label>
+                <input type="file" id="file-input" multiple>
+                <div class="dropzone-text" style="margin-top: 16px;">Supports PDF, images, Word, Excel, and more</div>
+            </div>
+
+            <!-- Upload Form -->
+            <div class="upload-form" id="upload-form">
+                <div class="selected-file" id="selected-file"></div>
+
+                <div class="form-group">
+                    <label for="document-type">Document Type</label>
+                    <select id="document-type" required>
+                        <option value="">Select type</option>
+                        <option value="AADHAAR">Aadhaar Card</option>
+                        <option value="PAN">PAN Card</option>
+                        <option value="PASSPORT">Passport</option>
+                        <option value="DRIVING_LICENSE">Driving License</option>
+                        <option value="BANK_STATEMENT">Bank Statement</option>
+                        <option value="SALARY_SLIP">Salary Slip</option>
+                        <option value="OTHER">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description (Optional)</label>
+                    <textarea id="description" placeholder="Add any notes about this document..."></textarea>
+                </div>
+
+                <div class="upload-progress" id="upload-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <div class="progress-text" id="progress-text">Uploading...</div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="cancelUpload()">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="upload-btn" onclick="uploadFile()">Upload</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script>
+        checkAuth();
+
+        const user = getUser();
+        if (user) {
+            document.getElementById('user-name').textContent = user.username;
+            document.getElementById('user-role').textContent = user.role || 'User';
+            document.getElementById('user-avatar').textContent = user.username.charAt(0).toUpperCase();
+
+            if (user.role === 'admin' || user.role === 'superadmin') {
+                document.getElementById('admin-link').style.display = 'flex';
+            }
+        }
+
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('file-input');
+        const uploadForm = document.getElementById('upload-form');
+        let selectedFile = null;
+
+        // Drag and drop handlers
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('dragover');
+        });
+
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('dragover');
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
+        function handleFileSelect(file) {
+            selectedFile = file;
+            
+            // Display file info
+            document.getElementById('selected-file').innerHTML = `
+                <div class="file-icon">📄</div>
+                <div class="file-details">
+                    <div class="file-name">${file.name}</div>
+                    <div class="file-size">${formatFileSize(file.size)}</div>
+                </div>
+                <button class="remove-file" onclick="cancelUpload()">Remove</button>
+            `;
+
+            // Show form
+            uploadForm.classList.add('show');
+            dropzone.style.display = 'none';
+        }
+
+        function cancelUpload() {
+            selectedFile = null;
+            uploadForm.classList.remove('show');
+            dropzone.style.display = 'block';
+            fileInput.value = '';
+            document.getElementById('document-type').value = '';
+            document.getElementById('description').value = '';
+        }
+
+        async function uploadFile() {
+            if (!selectedFile) {
+                showToast('Please select a file', 'error');
+                return;
+            }
+
+            const documentType = document.getElementById('document-type').value;
+            if (!documentType) {
+                showToast('Please select a document type', 'error');
+                return;
+            }
+
+            const description = document.getElementById('description').value;
+
+            // Show progress
+            const uploadBtn = document.getElementById('upload-btn');
+            const progressContainer = document.getElementById('upload-progress');
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = 'Uploading...';
+            progressContainer.classList.add('show');
+
+            try {
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                formData.append('document_type', documentType);
+                if (description) {
+                    formData.append('description', description);
+                }
+
+                const token = getToken();
+                const xhr = new XMLHttpRequest();
+
+                // Progress handler
+                xhr.upload.addEventListener('progress', (e) => {
+                    if (e.lengthComputable) {
+                        const percent = (e.loaded / e.total) * 100;
+                        progressFill.style.width = percent + '%';
+                        progressText.textContent = `Uploading... ${Math.round(percent)}%`;
+                    }
+                });
+
+                xhr.addEventListener('load', () => {
+                    if (xhr.status === 201) {
+                        progressText.textContent = 'Upload complete!';
+                        showToast('Document uploaded successfully', 'success');
+                        
+                        setTimeout(() => {
+                            window.location.href = '/documents.html';
+                        }, 1500);
+                    } else {
+                        const error = JSON.parse(xhr.responseText);
+                        throw new Error(error.error || 'Upload failed');
+                    }
+                });
+
+                xhr.addEventListener('error', () => {
+                    throw new Error('Upload failed');
+                });
+
+                xhr.open('POST', '/api/documents/upload');
+                xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+                xhr.send(formData);
+
+            } catch (error) {
+                console.error('Upload error:', error);
+                showToast(error.message || 'Upload failed', 'error');
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = 'Upload';
+                progressContainer.classList.remove('show');
+                progressFill.style.width = '0%';
+            }
+        }
+    </script>
+</body>
+</html>

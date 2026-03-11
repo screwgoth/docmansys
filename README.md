@@ -52,6 +52,10 @@ DB_HOST=localhost
 DB_NAME=docmansys
 DB_USER=postgres
 DB_PASSWORD=your_db_password
+
+# Server
+PORT=3000
+NODE_ENV=development
 ```
 
 ### 3. Set Up AWS S3
@@ -92,8 +96,8 @@ Create an S3 bucket with the following configuration:
 # Create PostgreSQL database
 createdb docmansys
 
-# TODO: Run migrations (to be implemented)
-# npm run migrate
+# Run database initialization
+npm run db:init
 ```
 
 ### 5. Start the Server
@@ -305,7 +309,251 @@ docmansys/
 └── .env.example
 ```
 
+## 🎨 Frontend
+
+The DocManSys frontend is a modern, responsive web application with a dark theme optimized for enterprise use.
+
+### Features
+
+- **Modern Dark UI**: Professional dark theme with blue accents
+- **Fully Responsive**: Works seamlessly on desktop, tablet, and mobile
+- **JWT Authentication**: Secure token-based authentication
+- **Real-time Updates**: Dynamic document loading and filtering
+- **Drag & Drop Upload**: Intuitive file upload interface
+- **Document Viewer**: In-browser preview for PDFs and images
+- **Role-Based UI**: Admin features only visible to authorized users
+
+### Pages
+
+#### Login Page (`/`)
+- Clean, centered login form
+- JWT token authentication
+- Auto-redirect if already logged in
+- Error handling with user-friendly messages
+
+#### Dashboard (`/dashboard.html`)
+- Statistics cards (total docs, monthly uploads, storage, active users)
+- Recent documents list
+- Quick action buttons
+- Responsive grid layout
+
+#### Documents Browser (`/documents.html`)
+- Grid and list view toggle
+- Real-time search
+- Filter by document type
+- Sort by date, name, or size
+- Click to view documents
+- Download functionality
+
+#### Upload Page (`/upload.html`)
+- Drag & drop file upload
+- File browser fallback
+- Document type selection
+- Optional description field
+- Upload progress indicator
+- Real-time file size validation
+
+#### Document Viewer (`/viewer.html`)
+- In-browser PDF viewing
+- Image preview
+- Text file display
+- Document metadata sidebar
+- Download and share options
+- Admin: Delete functionality
+
+#### Admin - User Management (`/admin/users.html`)
+- View all users
+- Create new users
+- Edit user roles
+- Enable/disable users
+- Modern table interface
+
+#### Admin - Masters Management (`/admin/index.html`)
+- Document types management
+- Departments configuration
+- Retention policies
+- Role permissions
+
+### Frontend Structure
+
+```
+public/
+├── index.html              # Login page
+├── dashboard.html          # Main dashboard
+├── documents.html          # Document browser
+├── upload.html             # Upload interface
+├── viewer.html             # Document viewer
+├── admin/
+│   ├── index.html          # Masters management
+│   ├── users.html          # User management
+│   ├── admin.js            # Admin JavaScript
+│   └── README.md           # Admin documentation
+├── css/
+│   └── common.css          # Shared styles
+└── js/
+    └── auth.js             # Authentication utilities
+```
+
+### Key Features
+
+#### Authentication (auth.js)
+```javascript
+// Check if user is authenticated
+checkAuth();
+
+// Get current user
+const user = getUser();
+
+// Logout
+logout();
+
+// Make authenticated API request
+const data = await apiRequest('/api/documents', {
+    method: 'GET'
+});
+```
+
+#### Responsive Design
+- Sidebar collapses on mobile
+- Touch-friendly buttons and controls
+- Optimized for screens 320px and up
+- Fluid typography and spacing
+
+#### Dark Theme
+- Background: `#0f172a` (dark slate)
+- Cards: `#1e293b` (slate)
+- Borders: `#334155` (slate-700)
+- Text: `#f8fafc` (slate-50)
+- Accent: `#3b82f6` (blue)
+
+### API Integration
+
+All frontend pages integrate with the backend REST API:
+
+- **Authentication**: `/api/auth/login`
+- **Documents**: `/api/documents`
+- **Upload**: `/api/documents/upload`
+- **Download**: `/api/documents/:id/download`
+- **Users** (Admin): `/api/admin/users`
+- **Masters** (Admin): `/api/masters/*`
+
+### Browser Support
+
+- Chrome/Edge (latest)
+- Firefox (latest)
+- Safari (latest)
+- Mobile browsers (iOS Safari, Chrome Mobile)
+
+### Development
+
+The frontend is served as static files from the `public/` directory by Express:
+
+```javascript
+app.use(express.static('public'));
+```
+
+No build step required - pure HTML, CSS, and vanilla JavaScript.
+
+### Customization
+
+#### Changing Colors
+Edit `/css/common.css`:
+```css
+/* Change primary accent color */
+.btn-primary {
+    background: linear-gradient(135deg, #your-color 0%, #your-color-dark 100%);
+}
+```
+
+#### Adding New Pages
+1. Create HTML file in `public/`
+2. Include common.css and auth.js
+3. Add sidebar navigation link
+4. Implement page functionality
+
+## 🐳 Docker Deployment
+
+The application is containerized using Docker for easy deployment.
+
+### Development Mode
+
+```bash
+# Start all services (app + PostgreSQL)
+docker-compose -f docker-compose.dev.yml up -d
+
+# View logs
+docker-compose -f docker-compose.dev.yml logs -f
+
+# Stop services
+docker-compose -f docker-compose.dev.yml down
+```
+
+**Development features:**
+- Hot reload with nodemon
+- Volume mounts for live code changes
+- Exposed PostgreSQL port (5432)
+- Detailed logging
+
+### Production Mode
+
+```bash
+# Start production services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+```
+
+**Production features:**
+- Optimized Node.js configuration
+- Health checks
+- Automatic restart policies
+- Separate network isolation
+
+### Environment Variables
+
+Both modes use the `.env` file. Ensure it's configured before running:
+
+```env
+# Required for Docker
+AWS_REGION=ap-south-1
+AWS_ACCESS_KEY_ID=your_key
+AWS_SECRET_ACCESS_KEY=your_secret
+AWS_S3_BUCKET=your-bucket
+JWT_SECRET=your-jwt-secret
+
+# Database (PostgreSQL)
+DB_HOST=postgres  # Use 'postgres' for Docker, 'localhost' for local
+DB_PORT=5432
+DB_NAME=docmansys
+DB_USER=postgres
+DB_PASSWORD=secure_password_here
+
+# Server
+PORT=3000
+NODE_ENV=production  # or 'development'
+```
+
+### Docker Files
+
+- `Dockerfile`: Production-ready image
+- `Dockerfile.dev`: Development image with nodemon
+- `docker-compose.yml`: Production stack
+- `docker-compose.dev.yml`: Development stack with volumes
+
 ## 🚧 TODO
+
+### Completed ✅
+- [x] Docker containerization (production + development)
+- [x] Admin dashboard UI
+- [x] Document preview (PDF and images)
+- [x] User management interface
+- [x] Full frontend implementation
+- [x] Responsive design (mobile + desktop)
+- [x] JWT authentication flow
 
 ### High Priority
 - [ ] Implement PostgreSQL database schema
@@ -319,15 +567,15 @@ docmansys/
 - [ ] Unit tests (Jest)
 - [ ] Integration tests
 - [ ] API documentation (Swagger/OpenAPI)
-- [ ] Docker containerization
 - [ ] CI/CD pipeline
+- [ ] Role permissions enforcement
 
 ### Low Priority
-- [ ] Admin dashboard UI
 - [ ] Customer portal
 - [ ] Email notifications
-- [ ] Document preview (PDF.js)
 - [ ] Bulk upload
+- [ ] Advanced document search
+- [ ] Audit logs UI
 
 ## 🧪 Testing
 
