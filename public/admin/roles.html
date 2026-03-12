@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Role Management - Document Management System</title>
+  <link rel="stylesheet" href="/css/common.css">
+  <style>
+    .role-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--bg-tertiary);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 16px;
+      transition: all 0.2s;
+    }
+
+    .role-card:hover {
+      border-color: var(--accent-primary);
+      transform: translateY(-2px);
+    }
+
+    .role-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .role-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .role-description {
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .permissions-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .permission-badge {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: var(--accent-primary);
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .role-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .role-actions button {
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+
+    .modal-permissions {
+      display: grid;
+      gap: 8px;
+      margin: 16px 0;
+    }
+
+    .permission-checkbox {
+      display: flex;
+      align-items: center;
+      padding: 8px;
+      background: var(--bg-secondary);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .permission-checkbox:hover {
+      background: var(--bg-tertiary);
+    }
+
+    .permission-checkbox input[type="checkbox"] {
+      margin-right: 8px;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .permission-checkbox label {
+      cursor: pointer;
+      flex: 1;
+      font-size: 14px;
+    }
+
+    .permission-desc {
+      color: var(--text-muted);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .role-status {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .role-status.active {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+    }
+
+    .role-status.inactive {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--error);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-secondary);
+    }
+
+    .empty-state svg {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    @media (max-width: 768px) {
+      .role-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .role-actions {
+        width: 100%;
+      }
+
+      .role-actions button {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h1>📄 DMS</h1>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="/dashboard.html">
+        <span>📊</span> Dashboard
+      </a>
+      <a href="/documents.html">
+        <span>📁</span> Documents
+      </a>
+      <a href="/upload.html">
+        <span>📤</span> Upload
+      </a>
+      <div class="nav-divider"></div>
+      <div class="nav-section">Admin</div>
+      <a href="/admin/users.html">
+        <span>👥</span> Users
+      </a>
+      <a href="/admin/roles.html" class="active">
+        <span>🔐</span> Roles
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-profile">
+        <div class="user-avatar" id="userAvatar">A</div>
+        <div class="user-info">
+          <div class="user-name" id="userName">Loading...</div>
+          <div class="user-role" id="userRole">...</div>
+        </div>
+      </div>
+      <button class="btn-secondary" onclick="logout()" style="width: 100%; margin-top: 12px;">
+        Logout
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="page-header">
+      <div>
+        <h1>Role Management</h1>
+        <p class="page-subtitle">Manage user roles and permissions</p>
+      </div>
+      <button class="btn-primary" onclick="openAddRoleModal()">
+        + Add Role
+      </button>
+    </div>
+
+    <div class="content-section">
+      <div id="rolesContainer">
+        <div class="loading">Loading roles...</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Add/Edit Role Modal -->
+  <div id="roleModal" class="modal">
+    <div class="modal-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <h2 id="modalTitle">Add Role</h2>
+        <button class="modal-close" onclick="closeRoleModal()">&times;</button>
+      </div>
+      <form id="roleForm" onsubmit="handleRoleSubmit(event)">
+        <div class="form-group">
+          <label for="roleName">Role Name *</label>
+          <input 
+            type="text" 
+            id="roleName" 
+            class="form-control" 
+            placeholder="e.g., Editor, Reviewer" 
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="roleDescription">Description</label>
+          <textarea 
+            id="roleDescription" 
+            class="form-control" 
+            rows="2"
+            placeholder="Brief description of this role"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Permissions *</label>
+          <div id="permissionsContainer" class="modal-permissions">
+            <!-- Permissions will be loaded here -->
+          </div>
+        </div>
+
+        <div class="form-group" id="statusGroup" style="display: none;">
+          <label>
+            <input type="checkbox" id="roleActive"> Active
+          </label>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" onclick="closeRoleModal()">
+            Cancel
+          </button>
+          <button type="submit" class="btn-primary">
+            <span id="submitBtnText">Create Role</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/js/auth.js"></script>
+  <script>
+    let roles = [];
+    let availablePermissions = [];
+    let editingRoleId = null;
+
+    // Permission descriptions
+    const permissionDescriptions = {
+      'documents:view': 'View documents in the system',
+      'documents:upload': 'Upload new documents',
+      'documents:edit': 'Edit document metadata',
+      'documents:delete': 'Delete documents',
+      'documents:download': 'Download documents',
+      'users:view': 'View user list',
+      'users:create': 'Create new users',
+      'users:edit': 'Edit user details',
+      'users:delete': 'Delete or deactivate users',
+      'roles:view': 'View role list',
+      'roles:create': 'Create new roles',
+      'roles:edit': 'Edit role permissions',
+      'roles:delete': 'Delete roles',
+      'admin:access': 'Access admin panel',
+      'admin:settings': 'Modify system settings',
+      'admin:audit': 'View audit logs',
+      'masters:view': 'View master data',
+      'masters:edit': 'Edit master data'
+    };
+
+    // Load roles on page load
+    document.addEventListener('DOMContentLoaded', async () => {
+      checkAuth();
+      loadUserProfile();
+      await loadRoles();
+    });
+
+    function loadUserProfile() {
+      const user = getUser();
+      if (user) {
+        document.getElementById('userName').textContent = user.username || 'User';
+        document.getElementById('userRole').textContent = user.role || 'user';
+        document.getElementById('userAvatar').textContent = (user.username || 'U')[0].toUpperCase();
+      }
+    }
+
+    async function loadRoles() {
+      try {
+        const response = await apiRequest('/api/masters/roles?includeInactive=true');
+        
+        if (response.roles) {
+          roles = response.roles;
+          availablePermissions = response.availablePermissions || [];
+          renderRoles();
+        }
+      } catch (error) {
+        console.error('Failed to load roles:', error);
+        document.getElementById('rolesContainer').innerHTML = `
+          <div class="empty-state">
+            <p style="color: var(--error);">Failed to load roles</p>
+            <p style="font-size: 14px;">${error.message || 'Unknown error'}</p>
+          </div>
+        `;
+      }
+    }
+
+    function renderRoles() {
+      const container = document.getElementById('rolesContainer');
+      
+      if (roles.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+            <h3>No Roles Found</h3>
+            <p>Create your first role to get started</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = roles.map(role => `
+        <div class="role-card">
+          <div class="role-header">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="role-name">${escapeHtml(role.roleName)}</span>
+                <span class="role-status ${role.isActive ? 'active' : 'inactive'}">
+                  ${role.isActive ? 'Active' : 'Inactive'}
+                </span>
+              </div>
+              ${role.description ? `<div class="role-description">${escapeHtml(role.description)}</div>` : ''}
+            </div>
+            <div class="role-actions">
+              <button class="btn-secondary" onclick="editRole(${role.id})">
+                Edit
+              </button>
+              <button class="btn-danger" onclick="deleteRole(${role.id}, '${escapeHtml(role.roleName)}')">
+                Delete
+              </button>
+            </div>
+          </div>
+          
+          ${role.permissions && role.permissions.length > 0 ? `
+            <div class="permissions-list">
+              ${role.permissions.map(perm => 
+                `<span class="permission-badge">${escapeHtml(perm)}</span>`
+              ).join('')}
+            </div>
+          ` : '<p class="text-muted">No permissions assigned</p>'}
+        </div>
+      `).join('');
+    }
+
+    function openAddRoleModal() {
+      editingRoleId = null;
+      document.getElementById('modalTitle').textContent = 'Add Role';
+      document.getElementById('submitBtnText').textContent = 'Create Role';
+      document.getElementById('roleForm').reset();
+      document.getElementById('statusGroup').style.display = 'none';
+      
+      renderPermissionsCheckboxes([]);
+      
+      document.getElementById('roleModal').style.display = 'flex';
+    }
+
+    function editRole(roleId) {
+      const role = roles.find(r => r.id === roleId);
+      if (!role) return;
+
+      editingRoleId = roleId;
+      document.getElementById('modalTitle').textContent = 'Edit Role';
+      document.getElementById('submitBtnText').textContent = 'Update Role';
+      
+      document.getElementById('roleName').value = role.roleName;
+      document.getElementById('roleDescription').value = role.description || '';
+      document.getElementById('roleActive').checked = role.isActive;
+      document.getElementById('statusGroup').style.display = 'block';
+      
+      renderPermissionsCheckboxes(role.permissions || []);
+      
+      document.getElementById('roleModal').style.display = 'flex';
+    }
+
+    function renderPermissionsCheckboxes(selectedPermissions) {
+      const container = document.getElementById('permissionsContainer');
+      
+      if (availablePermissions.length === 0) {
+        container.innerHTML = '<p class="text-muted">No permissions available</p>';
+        return;
+      }
+
+      container.innerHTML = availablePermissions.map(perm => {
+        const isChecked = selectedPermissions.includes(perm);
+        const description = permissionDescriptions[perm] || '';
+        
+        return `
+          <div class="permission-checkbox">
+            <input 
+              type="checkbox" 
+              id="perm_${perm}" 
+              name="permissions" 
+              value="${perm}"
+              ${isChecked ? 'checked' : ''}
+            >
+            <label for="perm_${perm}">
+              <div>${escapeHtml(perm)}</div>
+              ${description ? `<div class="permission-desc">${escapeHtml(description)}</div>` : ''}
+            </label>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function closeRoleModal() {
+      document.getElementById('roleModal').style.display = 'none';
+      editingRoleId = null;
+    }
+
+    async function handleRoleSubmit(event) {
+      event.preventDefault();
+
+      const roleName = document.getElementById('roleName').value.trim();
+      const description = document.getElementById('roleDescription').value.trim();
+      const isActive = document.getElementById('roleActive').checked;
+      
+      const checkedPerms = Array.from(document.querySelectorAll('input[name="permissions"]:checked'))
+        .map(cb => cb.value);
+
+      if (checkedPerms.length === 0) {
+        showToast('Please select at least one permission', 'error');
+        return;
+      }
+
+      const roleData = {
+        roleName,
+        description,
+        permissions: checkedPerms
+      };
+
+      if (editingRoleId) {
+        roleData.isActive = isActive;
+      }
+
+      try {
+        const endpoint = editingRoleId 
+          ? `/api/masters/roles/${editingRoleId}`
+          : '/api/masters/roles';
+        
+        const method = editingRoleId ? 'PUT' : 'POST';
+
+        const response = await apiRequest(endpoint, {
+          method,
+          body: JSON.stringify(roleData)
+        });
+
+        showToast(response.message || `Role ${editingRoleId ? 'updated' : 'created'} successfully`, 'success');
+        closeRoleModal();
+        await loadRoles();
+      } catch (error) {
+        console.error('Failed to save role:', error);
+        showToast(error.message || 'Failed to save role', 'error');
+      }
+    }
+
+    async function deleteRole(roleId, roleName) {
+      if (!confirm(`Are you sure you want to delete the role "${roleName}"?\n\nThis will deactivate the role and it may affect users assigned to it.`)) {
+        return;
+      }
+
+      try {
+        const response = await apiRequest(`/api/masters/roles/${roleId}`, {
+          method: 'DELETE'
+        });
+
+        showToast(response.message || 'Role deleted successfully', 'success');
+        await loadRoles();
+      } catch (error) {
+        console.error('Failed to delete role:', error);
+        showToast(error.message || 'Failed to delete role', 'error');
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modal = document.getElementById('roleModal');
+      if (event.target === modal) {
+        closeRoleModal();
+      }
+    };
+  </script>
+</body>
+</html>

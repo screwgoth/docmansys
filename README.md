@@ -368,6 +368,14 @@ The DocManSys frontend is a modern, responsive web application with a dark theme
 - Enable/disable users
 - Modern table interface
 
+#### Admin - Role Management (`/admin/roles.html`)
+- View all roles with permissions
+- Create custom roles
+- Edit role permissions
+- Manage role status (active/inactive)
+- Permission matrix with descriptions
+- Integration with user management
+
 #### Admin - Masters Management (`/admin/index.html`)
 - Document types management
 - Departments configuration
@@ -386,6 +394,7 @@ public/
 ├── admin/
 │   ├── index.html          # Masters management
 │   ├── users.html          # User management
+│   ├── roles.html          # Role management
 │   ├── admin.js            # Admin JavaScript
 │   └── README.md           # Admin documentation
 ├── css/

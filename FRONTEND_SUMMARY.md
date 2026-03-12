@@ -98,6 +98,34 @@
 - **Role-Based Access:**
   - Only visible to admins
 
+#### Admin - Role Management (`public/admin/roles.html`)
+- **Role Cards:**
+  - Card-based layout with role details
+  - Role name, description, status badge
+  - Permission badges display
+  - Hover effects and smooth transitions
+- **Actions:**
+  - Create new role
+  - Edit existing role
+  - Delete/deactivate role
+- **Permission Management:**
+  - Checkbox-based permission selection
+  - Permission descriptions
+  - Categories: documents, users, roles, admin, masters
+  - Visual grouping and clear labeling
+- **Modal Form:**
+  - Role name and description
+  - Permission checkboxes with descriptions
+  - Active/inactive toggle (edit mode)
+  - Form validation
+- **Features:**
+  - View all available permissions
+  - Prevent deletion of roles in use
+  - Status indicators (active/inactive)
+  - Mobile responsive cards
+- **Role-Based Access:**
+  - Only visible to admins
+
 ### 2. Shared Components
 
 #### Common Styles (`public/css/common.css`)
@@ -152,6 +180,7 @@ All pages integrate with backend REST API:
 | Upload | `POST /api/documents/upload` (multipart/form-data) |
 | Viewer | `GET /api/documents/:id`, `GET /api/documents/:id/download`, `DELETE /api/documents/:id` |
 | Admin Users | `GET /api/admin/users`, `POST /api/admin/users`, `PUT /api/admin/users/:id` |
+| Admin Roles | `GET /api/masters/roles`, `POST /api/masters/roles`, `PUT /api/masters/roles/:id`, `DELETE /api/masters/roles/:id` |
 
 ### 4. Features Implemented
 
@@ -282,13 +311,13 @@ No build step required. All files served directly from `public/` folder.
 ## 📊 Statistics
 
 ### Files Created
-- 8 HTML pages
+- 9 HTML pages (including role management)
 - 1 CSS file (3,936 bytes)
 - 1 JavaScript file (3,595 bytes)
-- Total: ~78 KB of frontend code
+- Total: ~93 KB of frontend code
 
 ### Lines of Code
-- HTML: ~2,100 lines
+- HTML: ~2,600 lines
 - CSS: ~240 lines
 - JavaScript: ~950 lines
 
