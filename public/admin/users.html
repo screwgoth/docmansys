@@ -7,12 +7,12 @@
     <link rel="stylesheet" href="/css/common.css">
     <style>
         body {
-            background: #0f172a;
+            background: var(--bg-primary);
         }
 
         .table-container {
-            background: #1e293b;
-            border: 1px solid #334155;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             overflow: hidden;
         }
@@ -22,11 +22,11 @@
             justify-content: space-between;
             align-items: center;
             padding: 20px 24px;
-            border-bottom: 1px solid #334155;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .table-title {
-            color: #f8fafc;
+            color: var(--text-primary);
             font-size: 18px;
             font-weight: 600;
         }
@@ -37,13 +37,13 @@
         }
 
         thead {
-            background: #0f172a;
+            background: var(--bg-primary);
         }
 
         th {
             padding: 16px 24px;
             text-align: left;
-            color: #94a3b8;
+            color: var(--text-secondary);
             font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -52,13 +52,13 @@
 
         td {
             padding: 16px 24px;
-            border-top: 1px solid #334155;
+            border-top: 1px solid var(--border-color);
             color: #cbd5e1;
             font-size: 14px;
         }
 
         tbody tr:hover {
-            background: #334155;
+            background: var(--border-color);
         }
 
         .user-cell {
@@ -71,7 +71,7 @@
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #2563eb 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -85,7 +85,7 @@
             display: inline-block;
             padding: 4px 12px;
             background: rgba(59, 130, 246, 0.1);
-            color: #3b82f6;
+            color: var(--accent-primary);
             border-radius: 12px;
             font-size: 12px;
             font-weight: 500;
@@ -111,7 +111,7 @@
 
         .status-badge.inactive {
             background: rgba(100, 116, 139, 0.1);
-            color: #64748b;
+            color: var(--text-secondary);
         }
 
         .action-buttons {
@@ -143,8 +143,8 @@
         }
 
         .modal-content {
-            background: #1e293b;
-            border: 1px solid #334155;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 32px;
             max-width: 500px;
@@ -158,7 +158,7 @@
         }
 
         .modal-title {
-            color: #f8fafc;
+            color: var(--text-primary);
             font-size: 20px;
             font-weight: 600;
         }
@@ -169,7 +169,7 @@
             right: 16px;
             background: transparent;
             border: none;
-            color: #94a3b8;
+            color: var(--text-secondary);
             font-size: 24px;
             cursor: pointer;
         }
@@ -190,17 +190,17 @@
         .form-group select {
             width: 100%;
             padding: 10px 16px;
-            background: #0f172a;
-            border: 1px solid #334155;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            color: #f8fafc;
+            color: var(--text-primary);
             font-size: 14px;
         }
 
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
-            border-color: #3b82f6;
+            border-color: var(--accent-primary);
         }
 
         .modal-actions {
@@ -213,7 +213,7 @@
         .empty-state {
             padding: 60px 40px;
             text-align: center;
-            color: #64748b;
+            color: var(--text-secondary);
         }
 
         @media (max-width: 768px) {
@@ -270,6 +270,10 @@
     <div class="main-content">
         <div class="header">
             <h1>User Management</h1>
+      <button class="theme-toggle-btn" onclick="toggleTheme()" style="position: absolute; right: 2rem; top: 1.2rem; padding: 0.5rem 1rem; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; color: white; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+        <span id="theme-icon">🌙</span>
+        <span id="theme-text">Dark Mode</span>
+      </button>
             <button class="btn btn-primary" onclick="openAddModal()">+ Add User</button>
         </div>
 
@@ -342,6 +346,7 @@
         </div>
     </div>
 
+    <script src="/js/theme.js"></script>
     <script src="/js/auth.js"></script>
     <script>
         checkAuth();

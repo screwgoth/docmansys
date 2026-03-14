@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/css/common.css">
     <style>
         body {
-            background: #0f172a;
+            
             overflow: hidden;
         }
 
@@ -18,9 +18,9 @@
 
         .viewer-sidebar {
             width: 320px;
-            background: #1e293b;
-            border-right: 1px solid #334155;
-            padding: 24px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border-color);
+            padding: 32px;
             overflow-y: auto;
         }
 
@@ -28,32 +28,32 @@
             position: absolute;
             top: 24px;
             right: 24px;
-            width: 36px;
-            height: 36px;
-            background: #334155;
+            width: 48px;
+            height: 48px;
+            background: var(--border-color);
             border: none;
-            border-radius: 8px;
-            color: #cbd5e1;
+            border-radius: 12px;
+            color: var(--text-primary);
             cursor: pointer;
-            font-size: 18px;
+            font-size: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .close-btn:hover {
-            background: #475569;
+            background: var(--bg-secondary);
         }
 
         .doc-header {
-            margin-bottom: 24px;
+            margin-bottom: 48px;
         }
 
         .doc-title {
-            color: #f8fafc;
-            font-size: 18px;
+            color: var(--text-primary);
+            font-size: 24px;
             font-weight: 600;
-            margin-bottom: 12px;
+            margin-bottom: 48px;
             word-wrap: break-word;
         }
 
@@ -61,22 +61,22 @@
             display: inline-block;
             padding: 4px 12px;
             background: rgba(59, 130, 246, 0.1);
-            color: #3b82f6;
+            color: var(--accent-primary);
             border-radius: 12px;
-            font-size: 12px;
+            font-size: 24px;
             font-weight: 500;
         }
 
         .doc-section {
-            margin-bottom: 24px;
+            margin-bottom: 48px;
         }
 
         .section-title {
-            color: #94a3b8;
-            font-size: 12px;
+            color: var(--text-secondary);
+            font-size: 24px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 12px;
+            margin-bottom: 48px;
             font-weight: 600;
         }
 
@@ -84,9 +84,9 @@
             display: flex;
             justify-content: space-between;
             padding: 10px 0;
-            border-bottom: 1px solid #334155;
-            color: #cbd5e1;
-            font-size: 14px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+            font-size: 24px;
         }
 
         .info-row:last-child {
@@ -94,26 +94,26 @@
         }
 
         .info-label {
-            color: #94a3b8;
+            color: var(--text-secondary);
             font-weight: 500;
         }
 
         .doc-actions {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 20px;
         }
 
         .action-btn {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 20px;
             padding: 12px 16px;
-            background: #334155;
+            background: var(--border-color);
             border: none;
-            border-radius: 8px;
-            color: #cbd5e1;
-            font-size: 14px;
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 24px;
             cursor: pointer;
             transition: background 0.2s;
             text-decoration: none;
@@ -121,11 +121,11 @@
         }
 
         .action-btn:hover {
-            background: #475569;
+            background: var(--bg-secondary);
         }
 
         .action-btn.primary {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-hover) 100%);
             color: white;
         }
 
@@ -140,8 +140,8 @@
 
         .viewer-main {
             flex: 1;
-            background: #0f172a;
-            padding: 24px;
+            background: var(--bg-primary);
+            padding: 32px;
             overflow: auto;
             display: flex;
             flex-direction: column;
@@ -151,9 +151,9 @@
         .viewer-content {
             max-width: 1200px;
             width: 100%;
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
             overflow: hidden;
         }
 
@@ -171,13 +171,13 @@
         .unsupported-type {
             padding: 60px 40px;
             text-align: center;
-            color: #64748b;
+            color: var(--text-secondary);
         }
 
         .loading-viewer {
             padding: 60px 40px;
             text-align: center;
-            color: #64748b;
+            color: var(--text-secondary);
         }
 
         @media (max-width: 768px) {
@@ -230,7 +230,7 @@
 
             <div class="doc-section" id="description-section" style="display: none;">
                 <h3 class="section-title">Description</h3>
-                <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6;" id="doc-description"></p>
+                <p style="color: var(--text-primary); font-size: 24px; line-height: 1.6;" id="doc-description"></p>
             </div>
 
             <div class="doc-section">
@@ -240,6 +240,14 @@
                         <span>⬇️</span>
                         <span>Download</span>
                     </a>
+
+        <!-- Theme Toggle -->
+        <div class="theme-toggle">
+            <button class="theme-toggle-btn" onclick="toggleTheme()">
+                <span class="theme-icon" id="theme-icon">🌙</span>
+                <span id="theme-text">Dark Mode</span>
+            </button>
+        </div>
                     <button class="action-btn" onclick="shareDocument()">
                         <span>🔗</span>
                         <span>Share Link</span>
@@ -263,6 +271,7 @@
         </div>
     </div>
 
+    <script src="/js/theme.js"></script>
     <script src="/js/auth.js"></script>
     <script>
         checkAuth();
@@ -335,7 +344,7 @@
                 fetch(downloadUrl)
                     .then(res => res.text())
                     .then(text => {
-                        container.innerHTML = `<pre style="padding: 24px; color: #cbd5e1; font-size: 13px; line-height: 1.6; overflow: auto;">${escapeHtml(text)}</pre>`;
+                        container.innerHTML = `<pre style="padding: 32px; color: var(--text-primary); font-size: 24px; line-height: 1.6; overflow: auto;">${escapeHtml(text)}</pre>`;
                     })
                     .catch(() => {
                         showUnsupported(container);
@@ -350,8 +359,8 @@
         function showUnsupported(container) {
             container.innerHTML = `
                 <div class="unsupported-type">
-                    <div style="font-size: 64px; margin-bottom: 16px;">📄</div>
-                    <h3 style="color: #f8fafc; margin-bottom: 8px;">Preview not available</h3>
+                    <div style="font-size: 64px; margin-bottom: 48px;">📄</div>
+                    <h3 style="color: var(--text-primary); margin-bottom: 8px;">Preview not available</h3>
                     <p>This file type cannot be previewed in the browser</p>
                     <p style="margin-top: 16px;">Please download the file to view it</p>
                 </div>

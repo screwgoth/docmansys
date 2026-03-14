@@ -6,57 +6,62 @@
     <title>Upload - DocManSys</title>
     <link rel="stylesheet" href="/css/common.css">
     <style>
-        body {
-            background: #0f172a;
-        }
-
         .upload-container {
-            max-width: 800px;
+            max-width: 900px; /* Increased from 800px */
             margin: 0 auto;
         }
 
         .dropzone {
-            background: #1e293b;
-            border: 2px dashed #334155;
-            border-radius: 12px;
-            padding: 60px 40px;
+            background: var(--bg-card);
+            border: 2px dashed var(--border-color);
+            border-radius: 16px; /* Increased from 12px */
+            padding: 80px 48px; /* Increased from 60px 40px */
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
-            margin-bottom: 32px;
+            margin-bottom: 48px; /* Increased from 32px */
         }
 
         .dropzone.dragover {
-            border-color: #3b82f6;
+            border-color: var(--accent-primary);
             background: rgba(59, 130, 246, 0.05);
+            transform: scale(1.02);
         }
 
         .dropzone-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
+            font-size: 80px; /* Increased from 64px */
+            margin-bottom: 24px; /* Increased from 20px */
         }
 
         .dropzone-title {
-            color: #f8fafc;
-            font-size: 20px;
+            color: var(--text-primary);
+            font-size: 24px; /* Increased from 20px */
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 12px; /* Increased from 8px */
         }
 
         .dropzone-text {
-            color: #94a3b8;
-            font-size: 14px;
-            margin-bottom: 20px;
+            color: var(--text-secondary);
+            font-size: 16px; /* Increased from 14px */
+            margin-bottom: 24px; /* Increased from 20px */
         }
 
         .dropzone-button {
             display: inline-block;
-            padding: 12px 24px;
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            padding: 16px 32px; /* Increased from 12px 24px */
+            background: var(--accent-primary);
             color: white;
             border-radius: 8px;
             font-weight: 500;
+            font-size: 16px;
             cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .dropzone-button:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
         }
 
         #file-input {
@@ -64,11 +69,11 @@
         }
 
         .upload-form {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 12px;
-            padding: 32px;
-            margin-bottom: 32px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px; /* Increased from 12px */
+            padding: 40px; /* Increased from 32px */
+            margin-bottom: 48px; /* Increased from 32px */
             display: none;
         }
 
@@ -76,62 +81,27 @@
             display: block;
         }
 
-        .form-group {
-            margin-bottom: 24px;
-        }
-
-        .form-group label {
-            display: block;
-            color: #cbd5e1;
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 8px;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 10px 16px;
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            color: #f8fafc;
-            font-size: 14px;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #3b82f6;
-        }
-
-        .form-group textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
         .selected-file {
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px; /* Increased from 8px */
+            padding: 24px; /* Increased from 16px */
+            margin-bottom: 32px; /* Increased from 20px */
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 20px; /* Increased from 16px */
         }
 
         .file-icon {
-            width: 48px;
-            height: 48px;
+            width: 64px; /* Increased from 48px */
+            height: 64px;
             background: rgba(59, 130, 246, 0.1);
-            border-radius: 8px;
+            border-radius: 12px; /* Increased from 8px */
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 32px; /* Increased from 24px */
+            flex-shrink: 0;
         }
 
         .file-details {
@@ -139,37 +109,39 @@
         }
 
         .file-name {
-            color: #f8fafc;
-            font-size: 14px;
+            color: var(--text-primary);
+            font-size: 18px; /* Increased from 14px */
             font-weight: 500;
-            margin-bottom: 4px;
+            margin-bottom: 8px; /* Increased from 4px */
         }
 
         .file-size {
-            color: #64748b;
-            font-size: 12px;
+            color: var(--text-secondary);
+            font-size: 16px; /* Increased from 12px */
         }
 
         .remove-file {
-            padding: 8px 16px;
-            background: #334155;
-            border: none;
-            border-radius: 6px;
-            color: #cbd5e1;
+            padding: 12px 20px; /* Increased from 8px 16px */
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
             cursor: pointer;
-            font-size: 12px;
+            font-size: 16px; /* Increased from 12px */
+            transition: all 0.2s;
         }
 
         .remove-file:hover {
-            background: #475569;
+            background: var(--bg-primary);
+            border-color: var(--accent-primary);
         }
 
         .upload-progress {
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px; /* Increased from 8px */
+            padding: 28px; /* Increased from 20px */
+            margin-top: 32px; /* Increased from 20px */
             display: none;
         }
 
@@ -179,11 +151,11 @@
 
         .progress-bar {
             width: 100%;
-            height: 8px;
-            background: #334155;
-            border-radius: 4px;
+            height: 12px; /* Increased from 8px */
+            background: var(--bg-primary);
+            border-radius: 6px;
             overflow: hidden;
-            margin-bottom: 12px;
+            margin-bottom: 16px; /* Increased from 12px */
         }
 
         .progress-fill {
@@ -194,24 +166,81 @@
         }
 
         .progress-text {
-            color: #94a3b8;
-            font-size: 14px;
+            color: var(--text-primary);
+            font-size: 16px; /* Increased from 14px */
             text-align: center;
+            font-weight: 500;
         }
 
         .form-actions {
             display: flex;
-            gap: 12px;
+            gap: 16px; /* Increased from 12px */
             justify-content: flex-end;
+            margin-top: 32px;
+        }
+
+        .quick-tip {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-primary);
+            border-radius: 12px;
+            padding: 28px 32px; /* Increased padding */
+            margin-bottom: 32px;
+        }
+
+        .quick-tip-title {
+            font-size: 20px; /* Increased */
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .quick-tip-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .quick-tip-list li {
+            font-size: 16px; /* Increased */
+            color: var(--text-secondary);
+            padding: 12px 0;
+            padding-left: 32px;
+            position: relative;
+        }
+
+        .quick-tip-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--accent-primary);
+            font-weight: bold;
+            font-size: 18px;
         }
 
         @media (max-width: 768px) {
             .dropzone {
-                padding: 40px 20px;
+                padding: 48px 24px; /* Adjusted for mobile */
             }
 
             .upload-form {
-                padding: 24px;
+                padding: 28px; /* Adjusted for mobile */
+            }
+
+            .selected-file {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .form-actions .btn {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
@@ -223,6 +252,14 @@
             <div class="logo-icon">📄</div>
             <span>DocManSys</span>
         </a>
+
+        <!-- Theme Toggle -->
+        <div class="theme-toggle">
+            <button class="theme-toggle-btn" onclick="toggleTheme()">
+                <span class="theme-icon" id="theme-icon">🌙</span>
+                <span id="theme-text">Dark Mode</span>
+            </button>
+        </div>
 
         <nav class="nav-menu">
             <a href="/dashboard.html" class="nav-item">
@@ -261,6 +298,20 @@
                 <h1>Upload Document</h1>
             </div>
 
+            <!-- Quick Tip -->
+            <div class="quick-tip">
+                <div class="quick-tip-title">
+                    <span>💡</span>
+                    <span>Quick Tips</span>
+                </div>
+                <ul class="quick-tip-list">
+                    <li>Supports PDF, images, Word, Excel, and other common formats</li>
+                    <li>Maximum file size: 50MB per document</li>
+                    <li>Select the correct document type for better organization</li>
+                    <li>Add descriptions to make documents easier to find later</li>
+                </ul>
+            </div>
+
             <!-- Dropzone -->
             <div class="dropzone" id="dropzone">
                 <div class="dropzone-icon">📤</div>
@@ -268,7 +319,6 @@
                 <div class="dropzone-text">or</div>
                 <label for="file-input" class="dropzone-button">Browse Files</label>
                 <input type="file" id="file-input" multiple>
-                <div class="dropzone-text" style="margin-top: 16px;">Supports PDF, images, Word, Excel, and more</div>
             </div>
 
             <!-- Upload Form -->
@@ -303,12 +353,15 @@
 
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" onclick="cancelUpload()">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="upload-btn" onclick="uploadFile()">Upload</button>
+                    <button type="button" class="btn btn-primary" id="upload-btn" onclick="uploadFile()">
+                        <span>Upload</span>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
+    <script src="/js/theme.js"></script>
     <script src="/js/auth.js"></script>
     <script>
         checkAuth();
@@ -382,6 +435,14 @@
             document.getElementById('description').value = '';
         }
 
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
         async function uploadFile() {
             if (!selectedFile) {
                 showToast('Please select a file', 'error');
@@ -403,7 +464,7 @@
             const progressText = document.getElementById('progress-text');
 
             uploadBtn.disabled = true;
-            uploadBtn.textContent = 'Uploading...';
+            uploadBtn.innerHTML = '<span>Uploading...</span>';
             progressContainer.classList.add('show');
 
             try {
@@ -428,7 +489,7 @@
 
                 xhr.addEventListener('load', () => {
                     if (xhr.status === 201) {
-                        progressText.textContent = 'Upload complete!';
+                        progressText.textContent = 'Upload complete! ✓';
                         showToast('Document uploaded successfully', 'success');
                         
                         setTimeout(() => {
@@ -452,10 +513,21 @@
                 console.error('Upload error:', error);
                 showToast(error.message || 'Upload failed', 'error');
                 uploadBtn.disabled = false;
-                uploadBtn.textContent = 'Upload';
+                uploadBtn.innerHTML = '<span>Upload</span>';
                 progressContainer.classList.remove('show');
                 progressFill.style.width = '0%';
             }
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
         }
     </script>
 </body>
